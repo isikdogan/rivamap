@@ -14,7 +14,7 @@ class ChannelNetworkExtractor:
     def __init__(self, minScale=1.5, nrScales=15):
         self.minScale = minScale        
         self.nrScales = nrScales
-                
+        self.completionFlag = 0
         
     def createFilters(self):
 
@@ -55,8 +55,14 @@ class ChannelNetworkExtractor:
         self.G0_a = cv2.getGaussianKernel(2*ksize1+1, sigma1)
         self.G1   = -((1/sigma1)**2) * x_1 * self.G0_a.T
         
+        # Set completion flag
+        self.completionFlag = 1
 
     def applyFilters(self, I1):
+        
+        if self.completionFlag < 1:
+            print "Error: You should run createFilters first to create filters"
+            return None
         
         I1 = cv2.normalize(I1.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
         R, C = I1.shape
@@ -99,27 +105,49 @@ class ChannelNetworkExtractor:
             psi_scale = np.abs(J0)*J2 / ( 1 + np.abs(J1)**2 )
             
             # Suppress island response (channels have negative response)
-            psi_scale[psi_scale>0] = 0;
+            psi_scale[psi_scale>0] = 0
             psi_scale = -psi_scale
                 
             # Resize scale responses to the same size for element-wise comparison
             if s > 0:
                 psi_scale = cv2.resize(psi_scale, (R, C), interpolation = cv2.INTER_CUBIC)
                 angles = cv2.resize(angles, (R, C), interpolation = cv2.INTER_NEAREST)
-        
-            filename = "psi_scale_" + str(s) + ".png"
-            cv2.imwrite(filename, cv2.normalize(psi_scale, None, 0, 255, cv2.NORM_MINMAX))
-            
+                    
             # Compute the maximum response across scales
             if s == 0:
-                psi = psi_scale
-                orient = angles
-                scaleMap = np.zeros((R,C))
+                self.psi = psi_scale
+                self.orient = angles
+                self.scaleMap = np.zeros((R,C))
             else:
-                idx = psi_scale > psi
-                psi[idx] = psi_scale[idx]
-                scaleMap[idx] = s
-                orient[idx] = angles[idx]
-                
-                
-        return psi, orient
+                idx = psi_scale > self.psi
+                self.psi[idx] = psi_scale[idx]
+                self.scaleMap[idx] = s
+                self.orient[idx] = angles[idx]
+        
+        # Set completion flag
+        self.completionFlag = 2
+        
+        return self.psi, self.scaleMap
+            
+    
+    def extractCenterlines(self):
+        
+        if self.completionFlag < 2:
+            print "Error: You should run applyFilters first"
+            return None
+            
+        # Bin orientation values
+        Q = ((self.orient + np.pi/2) * 4 / np.pi + 0.5).astype('int') % 4
+        
+        # Handle borders
+        mask = np.zeros(self.psi.shape, dtype='bool')
+        mask[1:-1, 1:-1] = True
+        
+        # Find maxima along local orientation
+        self.NMS = np.zeros(self.psi.shape)
+        for q, (di, dj) in zip(range(4), ((1, 0), (1, 1), (0, 1), (-1, 1))):
+            for i, j in zip(*np.nonzero(np.logical_and(Q == q, mask))):
+                if self.psi[i, j] > self.psi[i + di, j + dj] and self.psi[i, j] > self.psi[i - di, j - dj]:
+                    self.NMS[i, j] = self.psi[i,j]
+        
+        return self.NMS
