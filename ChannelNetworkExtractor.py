@@ -127,6 +127,8 @@ class ChannelNetworkExtractor:
         # Set completion flag
         self.completionFlag = 2
         
+        # TODO: interpolate between scales to estimate the width
+        
         return self.psi, self.scaleMap
             
     
@@ -150,4 +152,43 @@ class ChannelNetworkExtractor:
                 if self.psi[i, j] > self.psi[i + di, j + dj] and self.psi[i, j] > self.psi[i - di, j - dj]:
                     self.NMS[i, j] = self.psi[i,j]
         
+        # Set completion flag
+        self.completionFlag = 3
+        
         return self.NMS
+        
+    def generateRasterMap(self):
+        
+        # TODO: clean up
+        
+        if self.completionFlag < 3:
+            print "Error: You should run extractCenterlines first"
+            return None
+        
+        # TODO: implement a centerline classifier instead of hard thresholding
+        centerlines = self.NMS > 0.03
+            
+        centerlineWidth       = self.minScale * np.sqrt(2)**self.scaleMap[centerlines]
+        centerlineOrientation = self.orient[centerlines]
+        
+        [row,col] = np.where(centerlines)
+        
+        x_off = -centerlineWidth * np.cos(centerlineOrientation)
+        y_off = centerlineWidth * np.sin(centerlineOrientation)
+        lines = np.vstack((col-x_off, row-y_off, col+x_off, row+y_off)).T
+        
+        self.raster = np.zeros(self.NMS.shape)
+        
+        for i in range(0, len(lines)):
+            cv2.line(self.raster, (int(lines[i,0]), int(lines[i,1])), (int(lines[i,2]), int(lines[i,3])), 255)
+
+        return None
+        
+    def exportShapeFile():
+        # TODO: implement
+        return None
+        
+        
+        
+        
+        
