@@ -115,17 +115,20 @@ class ChannelNetworkExtractor:
                     
             # Compute the maximum response across scales
             if s == 0:
-                self.psi = psi_scale
+                psi_max = psi_scale
                 self.orient = angles
                 self.scaleMap = np.zeros((R,C))
-                self.energy = psi_scale**2
+                self.psi = psi_scale**2
             else:
-                idx = psi_scale > self.psi
-                self.psi[idx] = psi_scale[idx]
+                idx = psi_scale > psi_max
+                psi_max[idx] = psi_scale[idx]
                 self.scaleMap[idx] = s
                 self.orient[idx] = angles[idx]
-                self.energy = self.energy + psi_scale**2
+                self.psi = self.psi + psi_scale**2
         
+        # Euclidean norm of the response across scales
+        self.psi = np.sqrt(self.psi)
+    
         # Set completion flag
         self.completionFlag = 2
         
