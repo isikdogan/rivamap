@@ -5,7 +5,7 @@ Created on Tue Oct  6 13:16:41 2015
 @author: leo
 """
 import cv2
-from ChannelNetworkExtractor import ChannelNetworkExtractor
+from cne import ChannelNetworkExtractor
 import time
 
 I1 = cv2.imread("/home/leo/Desktop/Dropbox/cne2/LC81380452014304LGN00_mndwi_cropped.tif", 0)
