@@ -5,9 +5,11 @@ Created on Tue Oct  6 12:59:51 2015
 @author: leo
 """
 
-import numpy as np
 import cv2
+import numpy as np
 from scipy.signal import fftconvolve
+from scipy.ndimage import sum as ndsum
+from scipy.ndimage import label as ndlabel
 
 class ChannelNetworkExtractor:
     
@@ -113,30 +115,30 @@ class ChannelNetworkExtractor:
                 psi_scale = cv2.resize(psi_scale, (R, C), interpolation = cv2.INTER_CUBIC)
                 angles = cv2.resize(angles, (R, C), interpolation = cv2.INTER_NEAREST)
                     
-            # Compute the maximum response across scales
+            # Compute the channel width, dominant orientation, and norm of the response across scales
             if s == 0:
                 psi_max = psi_scale
+                psi_sum = psi_scale
                 self.orient = angles
-                self.scaleMap = np.zeros((R,C))
+                self.widthMap = self.minScale * (np.sqrt(2)**s) * (psi_scale)
                 self.psi = psi_scale**2
             else:
                 idx = psi_scale > psi_max
                 psi_max[idx] = psi_scale[idx]
-                self.scaleMap[idx] = s
+                psi_sum = psi_sum + psi_scale
                 self.orient[idx] = angles[idx]
+                self.widthMap = self.widthMap + self.minScale * (np.sqrt(2)**s) * (psi_scale)
                 self.psi = self.psi + psi_scale**2
-        
-        # Euclidean norm of the response across scales
+                
+        self.widthMap = self.widthMap / psi_sum
         self.psi = np.sqrt(self.psi)
-    
+        
         # Set completion flag
         self.completionFlag = 2
         
-        # TODO: interpolate between scales to estimate the width
-        
-        return self.psi, self.scaleMap
+        return self.psi, self.widthMap
             
-    
+            
     def extractCenterlines(self):
         
         if self.completionFlag < 2:
@@ -162,32 +164,55 @@ class ChannelNetworkExtractor:
         
         return self.NMS
         
-    def generateRasterMap(self):
         
-        # TODO: clean up
+    def thresholdCenterlines(self, tLow=0.01, tHigh=0.03):
         
         if self.completionFlag < 3:
             print "Error: You should run extractCenterlines first"
             return None
         
-        # TODO: implement a centerline classifier instead of hard thresholding
-        centerlines = self.NMS > 0.03
-            
-        centerlineWidth       = self.minScale * np.sqrt(2)**self.scaleMap[centerlines]
-        centerlineOrientation = self.orient[centerlines]
+        strongCenterline    = self.NMS >= tHigh
+        centerlineCandidate = self.NMS >= tLow
         
-        [row,col] = np.where(centerlines)
+        # Find connected components that has at least one strong centerline pixel
+        strel = np.ones((3, 3), dtype=bool)
+        cclabels, numcc = ndlabel(centerlineCandidate, strel)
+        sumstrong = ndsum(strongCenterline, cclabels, range(1, numcc+1))
+        centerlines = np.hstack((0, sumstrong > 0)).astype('bool')
+        self.centerlines = centerlines[cclabels]
+    
+        # Set completion flag
+        self.completionFlag = 4
+        
+        return self.centerlines
+        
+        
+    def generateRasterMap(self, thickness=5):
+        
+        # TODO: clean up
+        
+        if self.completionFlag < 4:
+            print "Error: You should run hysteresisThresholding first"
+            return None
+                    
+        centerlineWidth       = self.widthMap[self.centerlines]
+        centerlineOrientation = self.orient[self.centerlines]
+        centerlineStrength    = self.psi[self.centerlines]
+        
+        [row,col] = np.where(self.centerlines)
         
         x_off = -centerlineWidth * np.cos(centerlineOrientation)
-        y_off = centerlineWidth * np.sin(centerlineOrientation)
+        y_off =  centerlineWidth * np.sin(centerlineOrientation)
         lines = np.vstack((col-x_off, row-y_off, col+x_off, row+y_off)).T
         
         self.raster = np.zeros(self.NMS.shape)
         
-        for i in range(0, len(lines)):
-            cv2.line(self.raster, (int(lines[i,0]), int(lines[i,1])), (int(lines[i,2]), int(lines[i,3])), 255)
+        for i in np.argsort(centerlineStrength): #range(0, len(lines)):
+            cv2.line(self.raster, (int(lines[i,0]), int(lines[i,1])), \
+                                  (int(lines[i,2]), int(lines[i,3])), \
+                                  centerlineStrength[i], thickness)
 
-        return None
+        return self.raster
         
     def exportShapeFile():
         # TODO: implement

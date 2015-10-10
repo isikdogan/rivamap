@@ -15,13 +15,11 @@ cne = ChannelNetworkExtractor()
 cne.createFilters()
 psi, _ = cne.applyFilters(I1)
 nms    = cne.extractCenterlines()
+tnms   = cne.thresholdCenterlines()
+raster = cne.generateRasterMap()
 print time.time() - t
 
-nms1 = nms
-T = 0.03
-nms1[nms1 < T] = 0
-nms1[nms1 >= T] = 255
-cv2.imwrite("nms2.png", nms1)
-
-cv2.imwrite("psi2.png", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
-#cv2.imwrite("raster.png", cv2.normalize(self.raster, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("psi.png", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("nms.png", cv2.normalize(nms, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("tnms.png", tnms.astype(int)*255)
+cv2.imwrite("raster.png", cv2.normalize(raster, None, 0, 255, cv2.NORM_MINMAX))
