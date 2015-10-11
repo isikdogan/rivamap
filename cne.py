@@ -75,7 +75,33 @@ class ChannelNetworkExtractor:
 
         # Set the completion flag.
         self.completionFlag = 1
+    
+    def mndwi(self, green, mir):
+        """ Computes the modified normalized difference water index
+        
+        Input Arguments:
+        green -- green band (e.g. Landsat 8 band 3)
+        mir -- middle infrared band (e.g. Landsat 8 band 6)
+        
+        Returns:
+        mndwi -- mndwi response
+        """
+        
+        if green.dtype == 'uint8':
+            green = green.astype('float')/255
+         
+        if mir.dtype == 'uint8':
+            mir   = mir.astype('float')/255
+        
+        numerator = green-mir
+        denominator = green+mir
+        numerator[numerator<0] = 0
+        numerator[denominator==0] = 0
+        denominator[denominator==0] = 1
+        
+        mndwi = numerator / denominator
 
+        return mndwi
 
     def applyFilters(self, I1):
         """ Apply the filters to a given input image to compute the
@@ -93,8 +119,10 @@ class ChannelNetworkExtractor:
         if self.completionFlag < 1:
             print "Error: You should run createFilters first to create filters"
             return None
-
-        I1 = cv2.normalize(I1.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
+        
+        if I1.dtype == 'uint8':
+            I1   = I1.astype('float')/255
+            
         R, C = I1.shape
 
         # Compute the multiscale singularity index
@@ -103,7 +131,7 @@ class ChannelNetworkExtractor:
 
             # Downscale the image to the current scale (faster than increasing the sigma)
             if s > 0:
-                I1 = cv2.resize(I1, (int(R/(np.sqrt(2)**s)), int(C/(np.sqrt(2)**s))), interpolation = cv2.INTER_CUBIC)
+                I1 = cv2.resize(I1, (int(C/(np.sqrt(2)**s)), int(R/(np.sqrt(2)**s))), interpolation = cv2.INTER_CUBIC)
 
             # Debias the image.
             mu = cv2.sepFilter2D(I1, cv2.CV_64FC1, self.Gdebias, self.Gdebias.T, borderType=cv2.BORDER_REFLECT_101)
@@ -139,8 +167,8 @@ class ChannelNetworkExtractor:
 
             # Resize scale responses to the same size for element-wise comparison
             if s > 0:
-                psi_scale = cv2.resize(psi_scale, (R, C), interpolation = cv2.INTER_CUBIC)
-                angles = cv2.resize(angles, (R, C), interpolation = cv2.INTER_NEAREST)
+                psi_scale = cv2.resize(psi_scale, (C, R), interpolation = cv2.INTER_CUBIC)
+                angles = cv2.resize(angles, (C, R), interpolation = cv2.INTER_NEAREST)
 
             # Compute the channel width, dominant orientation, and norm of the response across scales
             if s == 0:
@@ -157,7 +185,7 @@ class ChannelNetworkExtractor:
                 self.widthMap = self.widthMap + self.minScale * (np.sqrt(2)**s) * (psi_scale)
                 self.psi = self.psi + psi_scale**2
 
-        self.widthMap = self.widthMap / psi_sum
+        self.widthMap[psi_sum>0] = self.widthMap[psi_sum>0] / psi_sum[psi_sum>0]
         self.psi = np.sqrt(self.psi)
 
         # Set completion flag

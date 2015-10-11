@@ -2,17 +2,23 @@
 """
 Created on Tue Oct  6 13:16:41 2015
 
-@author: leo
+@author: Leo Isikdogan
+Homepage: www.isikdogan.com
+Project Homepage: http://live.ece.utexas.edu/research/cne/
+
+Example use of the channel network extraction framework
 """
+
 import cv2
 from cne import ChannelNetworkExtractor
 import time
 
-I1 = cv2.imread("/home/leo/Desktop/Dropbox/cne2/LC81380452014304LGN00_mndwi_cropped.tif", 0)
+I1 = cv2.imread("./samples/MNDWI.tif", 0)
 
 t = time.time()
 cne = ChannelNetworkExtractor()
 cne.createFilters()
+#I1     = cne.mndwi(B3, B6)
 psi, _ = cne.applyFilters(I1)
 nms    = cne.extractCenterlines()
 tnms   = cne.thresholdCenterlines()
