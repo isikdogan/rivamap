@@ -76,7 +76,7 @@ class ChannelNetworkExtractor:
         # Set the completion flag.
         self.completionFlag = 1
     
-    def mndwi(self, green, mir):
+    def mndwi(self, green, mir, contrastStretch=True):
         """ Computes the modified normalized difference water index
         
         Input Arguments:
@@ -100,7 +100,10 @@ class ChannelNetworkExtractor:
         denominator[denominator==0] = 1
         
         mndwi = numerator / denominator
-
+        
+        if contrastStretch:
+            mndwi = mndwi/np.max(mndwi)
+        
         return mndwi
 
     def applyFilters(self, I1):
@@ -227,7 +230,7 @@ class ChannelNetworkExtractor:
         return self.NMS
 
 
-    def thresholdCenterlines(self, tLow=0.01, tHigh=0.03):
+    def thresholdCenterlines(self, tLow=0.015, tHigh=0.025):
         """ Use a continuity-preserving hysteresis thresholding to classify
         centerlines.
 
@@ -238,7 +241,9 @@ class ChannelNetworkExtractor:
         Returns:
         centerlines -- a binary matrix that indicates centerline locations
         """
-
+        
+        # TODO: tune parameters on a dataset
+        
         if self.completionFlag < 3:
             print "Error: You should run extractCenterlines first"
             return None
