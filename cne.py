@@ -9,6 +9,7 @@ Project Homepage: http://live.ece.utexas.edu/research/cne/
 
 import cv2
 import numpy as np
+import warnings
 from scipy.signal import fftconvolve
 from scipy.ndimage import sum as ndsum
 from scipy.ndimage import label as ndlabel
@@ -120,9 +121,9 @@ class ChannelNetworkExtractor:
         """
 
         if self.completionFlag < 1:
-            print "Error: You should run createFilters first to create filters"
-            return None
-        
+            warnings.warn('Running createFilters function first to create filters')
+            self.createFilters()
+            
         if I1.dtype == 'uint8':
             I1   = I1.astype('float')/255
             
@@ -207,8 +208,7 @@ class ChannelNetworkExtractor:
         """
 
         if self.completionFlag < 2:
-            print "Error: You should run applyFilters first"
-            return None
+            raise ValueError('You should run applyFilters function first')
 
         # Bin orientation values
         Q = ((self.orient + np.pi/2) * 4 / np.pi + 0.5).astype('int') % 4
@@ -245,8 +245,8 @@ class ChannelNetworkExtractor:
         # TODO: tune parameters on a dataset
         
         if self.completionFlag < 3:
-            print "Error: You should run extractCenterlines first"
-            return None
+            warnings.warn('Running extractCenterlines function first')
+            self.extractCenterlines()
 
         strongCenterline    = self.NMS >= tHigh
         centerlineCandidate = self.NMS >= tLow
@@ -276,8 +276,8 @@ class ChannelNetworkExtractor:
         """
 
         if self.completionFlag < 4:
-            print "Error: You should run hysteresisThresholding first"
-            return None
+            warnings.warn('Running thresholdCenterlines function first')
+            self.thresholdCenterlines()
 
         centerlineWidth       = self.widthMap[self.centerlines]
         centerlineOrientation = self.orient[self.centerlines]
