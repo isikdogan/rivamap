@@ -10,25 +10,39 @@ Example use of the channel network extraction framework
 """
 
 import cv2
-from cne import ChannelNetworkExtractor
-import time
+from cne import singularity_index, delineate, preprocess, georef
 
-#I1 = cv2.imread("./samples/MNDWI.tif", 0)
-B3 = cv2.imread("./samples/B3.jpg", 0)
-B6 = cv2.imread("./samples/B6.jpg", 0)
+# Read bands 3 and 6 of an example Landsat 8 image
+B3 = cv2.imread("LC81380452015067LGN00_B3.TIF", 0)
+B6 = cv2.imread("LC81380452015067LGN00_B6.TIF", 0)
 
-t = time.time()
-cne = ChannelNetworkExtractor()
-mndwi  = cne.mndwi(B3, B6)
-cne.createFilters()
-psi, _ = cne.applyFilters(mndwi)
-nms    = cne.extractCenterlines()
-tnms   = cne.thresholdCenterlines()
-raster = cne.generateRasterMap()
-print time.time() - t
+# Compute the modified normalized difference water index of the input
+# and contrast stretch the result
+I1 = preprocess.mndwi(B3, B6)
+I1 = preprocess.contrastStretch(I1)
 
-cv2.imwrite("mndwi.png", cv2.normalize(mndwi, None, 0, 255, cv2.NORM_MINMAX))
+# Create the filters that are needed to compute the singularity index
+filters = singularity_index.SingularityIndexFilters()
+
+# Compute the modified multiscale singularity index
+psi, widthMap, orient = singularity_index.applyMMSI(I1, filters)
+
+# Extract channel centerlines
+nms = delineate.extractCenterlines(orient, psi)
+centerlines = delineate.thresholdCenterlines(nms)
+
+# Generate a raster map of the extracted channels
+raster = delineate.generateRasterMap(centerlines, orient, widthMap)
+
+# Copy the metadata of the input image and save the raster map as a geotiff file
+gm = georef.loadGeoMetadata("LC81380452015067LGN00_B6.TIF")
+georef.saveAsGeoTiff(gm, raster, "rasterMap.TIF")
+
+# Export the (coordinate, width) pairs to a comma separated text file
+georef.exportCSVfile(centerlines, widthMap, gm, "results.csv")
+
+# Save the images that are created at the intermediate steps
+cv2.imwrite("mndwi.png", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("psi.png", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("nms.png", cv2.normalize(nms, None, 0, 255, cv2.NORM_MINMAX))
-cv2.imwrite("tnms.png", tnms.astype(int)*255)
-cv2.imwrite("raster.png", cv2.normalize(raster, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("centerlines.png", centerlines.astype(int)*255)

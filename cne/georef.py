@@ -1,0 +1,118 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct  6 12:59:51 2015
+
+@author: Leo Isikdogan
+Homepage: www.isikdogan.com
+Project Homepage: http://live.ece.utexas.edu/research/cne/
+"""
+
+import csv
+import warnings
+import numpy as np
+from osgeo import osr, gdal
+
+class GeoMetadata:
+    def __init__(self):
+        self.projection = None
+        self.geotransform = None
+        self.rasterXY = None
+    
+        
+def loadGeoMetadata(filepath):
+    """ Reads metadata from a geotiff file
+    
+    Input Argument:
+    filepath -- path to the file
+    
+    Returns:
+    gm -- metadata
+    """
+    ds = gdal.Open(filepath)
+    
+    if ds is None:
+        raise ValueError('Cannot read file')
+    
+    gm = GeoMetadata()
+    gm.projection   = ds.GetProjection()
+    gm.geotransform = ds.GetGeoTransform()
+    gm.rasterXY = (ds.RasterXSize, ds.RasterYSize)
+    
+    if gm.projection is None:
+        warnings.warn('No projection found in the metadata')
+    
+    if gm.geotransform is None:
+        warnings.warn('No geotransform found in the metadata')
+    
+    # Close file
+    ds = None
+    
+    return gm
+    
+    
+def saveAsGeoTiff(gm, I, filepath):
+    """ Saves a raster image as a geotiff file
+    
+    Input Arguments:
+    gm -- georeferencing metadata
+    I -- raster image
+    filepath -- path to the file    
+    """
+    
+    if (I.shape[1] != gm.rasterXY[0]) and (I.shape[0] != gm.rasterXY[1]):
+        raise ValueError('Image size does not match the metadata')
+    
+    driver = gdal.GetDriverByName('GTiff')
+     
+    ds = driver.Create(filepath, I.shape[1], I.shape[0], 1, gdal.GDT_Float64)
+    
+    ds.SetGeoTransform(gm.geotransform)
+    ds.SetProjection(gm.projection)
+    ds.GetRasterBand(1).WriteArray(I)
+    
+    ds = None
+    
+def pix2lonlat(gm, x, y):
+    """ Convers pixel coordinates into longitude and latitude
+    
+    Input Arguments:
+    gm -- georeferencing metadata
+    x, y -- pixel coordinates
+    
+    Returns:
+    lon, lat -- longitude and latitude
+    """
+    
+    sr = osr.SpatialReference()
+    sr.ImportFromWkt(gm.projection)
+    ct = osr.CoordinateTransformation(sr,sr.CloneGeogCS())
+
+    lon_p = x*gm.geotransform[1]+gm.geotransform[0]
+    lat_p = y*gm.geotransform[5]+gm.geotransform[3]
+
+    lon, lat, _ = ct.TransformPoint(lon_p, lat_p)
+    
+    return lon, lat
+
+
+def exportCSVfile(centerlines, widthMap, gm, filepath):
+    """ Exports (coordinate, width) pairs to a comma separated text file
+    
+    Input Arguments:
+    centerlines -- a binary matrix that indicates centerline locations
+    widthMap -- estimated width at each spatial location (x,y)
+    gm -- georeferencing metadata
+    filepath -- path to the file
+    
+    """
+    
+    centerlineWidth = widthMap[centerlines]
+    [row,col] = np.where(centerlines)
+    
+    with open(filepath, 'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow(["width","lat","lon"])
+        
+        for i in range(0, len(centerlineWidth)):
+            lon, lat = pix2lonlat(gm, col[i], row[i])
+            writer.writerow([centerlineWidth[i], lat, lon])
