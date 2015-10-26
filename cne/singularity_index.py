@@ -142,15 +142,15 @@ def applyMMSI(I1, filters):
         # Compute the singularity index for the current scale
         psi_scale = np.abs(J0)*J2 / ( 1 + np.abs(J1)**2 )
 
-        # Suppress island response (channels have negative response)
-        psi_scale[psi_scale>0] = 0
-        psi_scale = -psi_scale
-
         # Resize scale responses to the same size for element-wise comparison
         if s > 0:
             psi_scale = cv2.resize(psi_scale, (C, R), interpolation = cv2.INTER_CUBIC)
             angles = cv2.resize(angles, (C, R), interpolation = cv2.INTER_NEAREST)
 
+        # Suppress island response (channels have negative response)
+        psi_scale[psi_scale>0] = 0
+        psi_scale = np.abs(psi_scale)
+        
         # Compute the channel width, dominant orientation, and norm of the response across scales
         if s == 0:
             psi_max = psi_scale
@@ -165,6 +165,7 @@ def applyMMSI(I1, filters):
             orient[idx] = angles[idx]
             widthMap = widthMap + filters.minScale * (np.sqrt(2)**s) * (psi_scale)
             psi = psi + psi_scale**2
+        
 
     widthMap[psi_sum>0] = widthMap[psi_sum>0] / psi_sum[psi_sum>0]
     psi = np.sqrt(psi)
