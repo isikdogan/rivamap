@@ -1,7 +1,7 @@
 ## Channel Network Extractor
 
-Related paper:  
-Isikdogan, F., A.C. Bovik, and P. Passalacqua (2015). Automatic analysis of channel networks on remotely sensed images by singularity analysis, IEEE Geoscience and Remote Sensing Letters, 12, 11, 2218-2221. [[**Read at IEEExplore**]](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7192616), [[**arXiv pre-print**]](http://arxiv.org/abs/1506.08670)
+####Related paper:  
+> Isikdogan, F., A.C. Bovik, and P. Passalacqua (2015). Automatic analysis of channel networks on remotely sensed images by singularity analysis, *IEEE Geoscience and Remote Sensing Letters*, 12, 11, 2218-2221. [[**Read at IEEExplore**]](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7192616), [[**arXiv pre-print**]](http://arxiv.org/abs/1506.08670)
 
 For an example use of the framework please see demo.py
 
