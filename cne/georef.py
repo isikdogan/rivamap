@@ -62,13 +62,25 @@ def saveAsGeoTiff(gm, I, filepath):
     if (I.shape[1] != gm.rasterXY[0]) and (I.shape[0] != gm.rasterXY[1]):
         raise ValueError('Image size does not match the metadata')
     
+    DATA_TYPE = {
+      "uint8": gdal.GDT_Byte,
+      "int8": gdal.GDT_Byte,
+      "uint16": gdal.GDT_UInt16,
+      "int16": gdal.GDT_Int16,
+      "uint32": gdal.GDT_UInt32,
+      "int32": gdal.GDT_Int32,
+      "float32": gdal.GDT_Float32,
+      "float64": gdal.GDT_Float64
+    }
+
     driver = gdal.GetDriverByName('GTiff')
      
-    ds = driver.Create(filepath, I.shape[1], I.shape[0], 1, gdal.GDT_Float64)
+    ds = driver.Create(filepath, I.shape[1], I.shape[0], 1, DATA_TYPE[I.dtype.name])
     
     ds.SetGeoTransform(gm.geotransform)
     ds.SetProjection(gm.projection)
     ds.GetRasterBand(1).WriteArray(I)
+    ds.FlushCache()
     
     ds = None
     
