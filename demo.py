@@ -10,7 +10,9 @@ Example use of the channel network extraction framework
 """
 
 import cv2
-from cne import singularity_index, delineate, preprocess, georef
+import numpy as np
+from cne import singularity_index, delineate, preprocess
+#from skimage.morphology import remove_small_objects
 
 # Read bands 3 and 6 of an example Landsat 8 image
 B3 = cv2.imread("LC80270392014118LGN00_B3.TIF", 0)
@@ -27,17 +29,14 @@ psi, widthMap, orient = singularity_index.applyMMSI(I1, filters)
 
 # Extract channel centerlines
 nms = delineate.extractCenterlines(orient, psi)
-centerlines = delineate.thresholdCenterlines(nms)
 
-# Generate a raster map of the extracted channels
-raster = delineate.generateRasterMap(centerlines, orient, widthMap)
+# Create a mask of valid pixels
+val_mask = B6 > 0
+val_mask = cv2.erode(np.array(val_mask, np.uint8), np.ones((221,221),np.uint8))
+nms[val_mask == 0] = 0
 
-# Copy the metadata of the input image and save the raster map as a geotiff file
-gm = georef.loadGeoMetadata("LC81380452015067LGN00_B6.TIF")
-georef.saveAsGeoTiff(gm, raster, "rasterMap.TIF")
-
-# Export the (coordinate, width) pairs to a comma separated text file
-georef.exportCSVfile(centerlines, widthMap, gm, "results.csv")
+centerlines = delineate.thresholdCenterlines(nms, tLow=0.01, tHigh=0.2)
+#centerlines = remove_small_objects(centerlines, min_size=16)
 
 # Save the images that are created at the intermediate steps
 cv2.imwrite("mndwi.png", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
