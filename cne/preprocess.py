@@ -11,26 +11,27 @@ import numpy as np
 
 def mndwi(green, mir):
     """ Computes the modified normalized difference water index
-    
+
     Input Arguments:
     green -- green band (e.g. Landsat 8 band 3)
     mir -- middle infrared band (e.g. Landsat 8 band 6)
-    
+
     Returns:
-    mndwi -- mndwi response
+    mndwi -- [0,1] normalized mndwi response
     """
-    
+
     green = im2double(green)
     mir = im2double(mir)
-        
+
     numerator = green-mir
+    numerator = numerator - np.min(numerator)
     denominator = green+mir
-    numerator[numerator<0] = 0
     numerator[denominator==0] = 0
     denominator[denominator==0] = 1
-    
+
     mndwi = numerator / denominator
-        
+    mndwi = mndwi / np.max(mndwi)
+
     return mndwi
 
 def contrastStretch(I):
@@ -42,9 +43,8 @@ def im2double(I):
     """ Converts image datatype to float """
     if I.dtype == 'uint8':
         I = I.astype('float')/255
-        
+
     if I.dtype == 'uint16':
         I = I.astype('float')/65535
-    
+
     return I
-    

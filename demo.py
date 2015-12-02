@@ -13,13 +13,11 @@ import cv2
 from cne import singularity_index, delineate, preprocess, georef
 
 # Read bands 3 and 6 of an example Landsat 8 image
-B3 = cv2.imread("LC81380452015067LGN00_B3.TIF", 0)
-B6 = cv2.imread("LC81380452015067LGN00_B6.TIF", 0)
+B3 = cv2.imread("LC80270392014118LGN00_B3.TIF", 0)
+B6 = cv2.imread("LC80270392014118LGN00_B6.TIF", 0)
 
 # Compute the modified normalized difference water index of the input
-# and contrast stretch the result
 I1 = preprocess.mndwi(B3, B6)
-I1 = preprocess.contrastStretch(I1)
 
 # Create the filters that are needed to compute the singularity index
 filters = singularity_index.SingularityIndexFilters()
