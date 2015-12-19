@@ -6,7 +6,7 @@ import os
 import cv2
 import numpy as np
 from cne import singularity_index, delineate, preprocess, georef
-#from skimage.morphology import remove_small_objects
+from skimage.morphology import remove_small_objects
 from multiprocessing import Process
 import time
 
@@ -22,7 +22,7 @@ def batch_compute(landsat_images):
 
 	print len(landsat_images)
 
-	filters = singularity_index.SingularityIndexFilters()
+	filters = singularity_index.SingularityIndexFilters(minScale=1.2, nrScales=16)
 
 	for landsat_image in landsat_images:
 
@@ -44,8 +44,9 @@ def batch_compute(landsat_images):
 	    val_mask = cv2.erode(np.array(val_mask, np.uint8), np.ones((221,221),np.uint8))
 	    nms[val_mask == 0] = 0
 
-	    centerlines = delineate.thresholdCenterlines(nms, tLow=0.01, tHigh=0.2)
-	    #centerlines = remove_small_objects(centerlines, min_size=64)
+	    #centerlines = delineate.thresholdCenterlines(nms, tLow=0.05, tHigh=0.3)
+	    #centerlines = remove_small_objects(centerlines, min_size=8)
+	    centerlines = nms
 
 	    gm = georef.loadGeoMetadata(os.path.join(base_dir, landsat_image, landsat_image + '_B6.TIF'))
 	    georef.exportCSVfile(centerlines, widthMap, gm, os.path.join(save_dir, landsat_image + '.csv'))
@@ -62,12 +63,12 @@ if __name__ == '__main__':
 	p0 = Process(target=batch_compute, args=([filelist_parts[0]]))
 	p0.start()
 
-	time.sleep(45)
+	time.sleep(60)
 
 	p1 = Process(target=batch_compute, args=([filelist_parts[1]]))
 	p1.start()
 
-	time.sleep(40)
+	time.sleep(45)
 
 	p2 = Process(target=batch_compute, args=([filelist_parts[2]]))
 	p2.start()
