@@ -6,7 +6,9 @@ Created on Tue Sep 22 18:32:19 2015
 """
 
 from landsat import search, downloader
-import os
+import cv2
+import numpy as np
+import os, glob
 import shutil
 import csv
 import tarfile
@@ -80,4 +82,20 @@ with open('NARWidth_scene_list.csv', 'rb') as csvfile:
 
 			shutil.rmtree(path)
 
-		break
+		# Compute the median images for the tiles
+		os.chdir(path_tile)
+		landsat_images = glob.glob("*_B6.TIF")
+
+		image_stack = np.zeros((7600, 7600, len(landsat_images)))
+		cnt = 0
+		for landsat_image in os.listdir(path_tile):
+			if landsat_image.endswith("_B3.TIF"):
+				im = cv2.imread(os.path.join(path_tile,landsat_image), 0)
+				image_stack[:,:,cnt] = im[0:7600, 0:7600]
+				cnt = cnt+1
+
+		#TODO: don't forget to cleanup variables and folders, center crop tiles, and copy geodata
+		median_image = np.mean(image_stack, axis=2)
+		cv2.imwrite("median.png", cv2.normalize(median_image, None, 0, 255, cv2.NORM_MINMAX))
+
+
