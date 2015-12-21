@@ -34,15 +34,18 @@ centerlines = delineate.thresholdCenterlines(nms)
 # Generate a raster map of the extracted channels
 raster = delineate.generateRasterMap(centerlines, orient, widthMap)
 
-# Copy the metadata of the input image and save the raster map as a geotiff file
+# Save the images that are created at the intermediate steps
+cv2.imwrite("mndwi.TIF", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("psi.TIF", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("nms.TIF", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("centerlines.TIF", centerlines.astype(int)*255)
+cv2.imwrite("rasterMap.TIF", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
+
+# An example of exporting a geotiff file
 gm = georef.loadGeoMetadata("LC81380452015067LGN00_B6.TIF")
-georef.saveAsGeoTiff(gm, raster, "rasterMap.TIF")
+psi = preprocess.contrastStretch(psi)
+psi = preprocess.double2im(psi, 'uint16')
+georef.saveAsGeoTiff(gm, psi, "psi_geotagged.TIF")
 
 # Export the (coordinate, width) pairs to a comma separated text file
 georef.exportCSVfile(centerlines, widthMap, gm, "results.csv")
-
-# Save the images that are created at the intermediate steps
-cv2.imwrite("mndwi.png", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
-cv2.imwrite("psi.png", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
-cv2.imwrite("nms.png", cv2.normalize(nms, None, 0, 255, cv2.NORM_MINMAX))
-cv2.imwrite("centerlines.png", centerlines.astype(int)*255)

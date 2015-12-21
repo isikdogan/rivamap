@@ -47,4 +47,14 @@ def im2double(I):
         I = I.astype('float')/65535
     
     return I
-    
+
+def double2im(I, datatype):
+    """ Converts double data array to image """
+
+    if datatype == 'uint8':
+        I = I * 255
+        
+    if datatype == 'uint16':
+        I = I * 65535
+
+    return I.astype(datatype)
