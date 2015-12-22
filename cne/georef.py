@@ -107,7 +107,7 @@ def pix2lonlat(gm, x, y):
     return lon, lat
 
 
-def exportCSVfile(nms, widthMap, gm, filepath):
+def exportCSVfile(centerlines, widthMap, gm, filepath):
     """ Exports (coordinate, width) pairs to a comma separated text file
     
     Input Arguments:
@@ -117,16 +117,14 @@ def exportCSVfile(nms, widthMap, gm, filepath):
     filepath -- path to the file
     
     """
-
-    centerlines = nms > 0.05 * np.max(nms)
+    
     centerlineWidth = widthMap[centerlines]
-    centerlinePsi = nms[centerlines]
     [row,col] = np.where(centerlines)
     
     with open(filepath, 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
-        writer.writerow(["width","lat","lon","psi"])
+        writer.writerow(["width","lat","lon"])
         
         for i in range(0, len(centerlineWidth)):
             lon, lat = pix2lonlat(gm, col[i], row[i])
-            writer.writerow([centerlineWidth[i], lat, lon, centerlinePsi[i]])
+            writer.writerow([centerlineWidth[i], lat, lon])

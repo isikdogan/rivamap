@@ -15,6 +15,10 @@ import tarfile
 import requests
 requests.packages.urllib3.disable_warnings()
 
+import sys
+sys.path.insert(0, r'/home/leo/Documents/git/channel-network-extractor/')
+from cne import georef, preprocess
+
 download_dest = "/home/leo/landsat8_median/"
 
 #read the list of tiles
@@ -39,7 +43,9 @@ with open('NARWidth_scene_list.csv', 'rb') as csvfile:
 			print 'cannot find an image for tile %s, skipping...' %(path_row)
 			continue
 
+		# sort results by cloud coverage
 		results = result['results']
+		results = sorted(results, key=lambda k: k['cloud'])
 
 		sceneIDs = []
 		for r in results:
@@ -50,9 +56,13 @@ with open('NARWidth_scene_list.csv', 'rb') as csvfile:
 			print 'cannot find an image for tile %s, skipping...' %(path_row)
 			continue
 
+		# Take top Nlim images with least cloud coverage
+		Nlim = 20
+		if len(sceneIDs) > Nlim:
+			sceneIDs = sceneIDs[0:Nlim]
+
 		# Download
 		for sceneID in sceneIDs:
-
 			path = os.path.join(download_dest, str(sceneID))
 			path_tile = os.path.join(download_dest, str(sceneID)[0:9])
 			if os.path.isdir(path):
@@ -86,16 +96,33 @@ with open('NARWidth_scene_list.csv', 'rb') as csvfile:
 		os.chdir(path_tile)
 		landsat_images = glob.glob("*_B6.TIF")
 
-		image_stack = np.zeros((7600, 7600, len(landsat_images)))
+		# read the first image to get the image size
+		im = cv2.imread(os.path.join(path_tile,landsat_images[0]), 0)
+		destsize = im.shape
+		image_stack = np.zeros((destsize[0], destsize[1], len(landsat_images)), dtype='uint16')
 		cnt = 0
-		for landsat_image in os.listdir(path_tile):
-			if landsat_image.endswith("_B3.TIF"):
-				im = cv2.imread(os.path.join(path_tile,landsat_image), 0)
-				image_stack[:,:,cnt] = im[0:7600, 0:7600]
-				cnt = cnt+1
+		for landsat_image in landsat_images:
+			im = cv2.imread(os.path.join(path_tile,landsat_image), cv2.IMREAD_UNCHANGED)
+			##center crop image to match size
+			#pad0 = np.round((im.shape[0] - cropsize)/2)
+			#pad1 = np.round((im.shape[1] - cropsize)/2)
+			#image_stack[:,:,cnt] = im[pad0:cropsize+pad0, pad1:cropsize+pad1]
+			im = cv2.resize(im, (destsize[1], destsize[0]), interpolation = cv2.INTER_CUBIC)
+			image_stack[:,:,cnt] = im
+			cnt = cnt+1
 
-		#TODO: don't forget to cleanup variables and folders, center crop tiles, and copy geodata
-		median_image = np.mean(image_stack, axis=2)
-		cv2.imwrite("median.png", cv2.normalize(median_image, None, 0, 255, cv2.NORM_MINMAX))
+		# compute the median image
+		median_image = np.median(image_stack, axis=2).astype('uint16')
+
+		#TODO: run b3b6
+
+		# Copy the metadata
+		gm = georef.loadGeoMetadata(os.path.join(path_tile,landsat_images[0]))
+		georef.saveAsGeoTiff(gm, median_image, "mediangeo.TIF")
+
+		#cv2.imwrite("median.TIF", cv2.normalize(median_image, None, 0, 255, cv2.NORM_MINMAX))
+
+		#cleanup variables
+		del image_stack, im, median_image
 
 
