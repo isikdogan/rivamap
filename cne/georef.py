@@ -84,6 +84,7 @@ def saveAsGeoTiff(gm, I, filepath):
     
     ds = None
     
+
 def pix2lonlat(gm, x, y):
     """ Convers pixel coordinates into longitude and latitude
     
@@ -105,6 +106,28 @@ def pix2lonlat(gm, x, y):
     lon, lat, _ = ct.TransformPoint(lon_p, lat_p)
     
     return lon, lat
+
+
+def lonlat2pix(gm, lon, lat):
+    """ Convers longitude and latitude into pixel coordinates
+    
+    Input Arguments:
+    gm -- georeferencing metadata
+    lon, lat -- longitude and latitude
+    
+    Returns:
+    x, y -- pixel coordinates
+    """
+    
+    sr = osr.SpatialReference()
+    sr.ImportFromWkt(gm.projection)
+    ct = osr.CoordinateTransformation(sr.CloneGeogCS(),sr)
+
+    lon_p, lat_p, _ = ct.TransformPoint(lon, lat)
+    x = (lon_p - gm.geotransform[0]) / gm.geotransform[1]
+    y = (lat_p - gm.geotransform[3]) / gm.geotransform[5]
+
+    return int(x), int(y)
 
 
 def exportCSVfile(centerlines, widthMap, gm, filepath):
