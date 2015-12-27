@@ -39,7 +39,7 @@ cv2.imwrite("mndwi.TIF", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("psi.TIF", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("nms.TIF", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("centerlines.TIF", centerlines.astype(int)*255)
-cv2.imwrite("rasterMap.TIF", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("rasterMap.TIF", cv2.normalize(raster, None, 0, 255, cv2.NORM_MINMAX))
 
 # An example of exporting a geotiff file
 gm = georef.loadGeoMetadata("LC81380452015067LGN00_B6.TIF")
