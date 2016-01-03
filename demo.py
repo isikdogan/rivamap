@@ -37,7 +37,7 @@ raster = delineate.generateRasterMap(centerlines, orient, widthMap)
 # Save the images that are created at the intermediate steps
 cv2.imwrite("mndwi.TIF", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("psi.TIF", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
-cv2.imwrite("nms.TIF", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
+cv2.imwrite("nms.TIF", cv2.normalize(nms, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("centerlines.TIF", centerlines.astype(int)*255)
 cv2.imwrite("rasterMap.TIF", cv2.normalize(raster, None, 0, 255, cv2.NORM_MINMAX))
 
