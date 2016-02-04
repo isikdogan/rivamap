@@ -22,8 +22,9 @@ def mndwi(green, mir):
     
     green = im2double(green)
     mir = im2double(mir)
-        
-    numerator = green-mir
+    
+    C = 0.1 #stabilizer
+    numerator = green-mir+C
     denominator = green+mir
     numerator[numerator<0] = 0
     numerator[denominator==0] = 0

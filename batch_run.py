@@ -6,7 +6,6 @@ import os
 import cv2
 import numpy as np
 from cne import singularity_index, delineate, preprocess, georef
-from skimage.morphology import remove_small_objects
 from multiprocessing import Process
 import time
 
@@ -26,11 +25,10 @@ def batch_compute(landsat_images):
 
 	for landsat_image in landsat_images:
 
-	    B3 = cv2.imread(os.path.join(base_dir, landsat_image, landsat_image + '_B3.TIF'), 0)
-	    B6 = cv2.imread(os.path.join(base_dir, landsat_image, landsat_image + '_B6.TIF'), 0)
+	    B3 = cv2.imread(os.path.join(base_dir, landsat_image, landsat_image + '_B3.TIF'), cv2.IMREAD_UNCHANGED)
+	    B6 = cv2.imread(os.path.join(base_dir, landsat_image, landsat_image + '_B6.TIF'), cv2.IMREAD_UNCHANGED)
 
 	    I1 = preprocess.mndwi(B3, B6)
-	    #I1 = preprocess.contrastStretch(I1)
 
 	    psi, widthMap, orient = singularity_index.applyMMSI(I1, filters)
 
@@ -45,15 +43,14 @@ def batch_compute(landsat_images):
 	    nms[val_mask == 0] = 0
 
 	    #centerlines = delineate.thresholdCenterlines(nms, tLow=0.05, tHigh=0.3)
-	    #centerlines = remove_small_objects(centerlines, min_size=8)
 	    centerlines = nms
 
 	    gm = georef.loadGeoMetadata(os.path.join(base_dir, landsat_image, landsat_image + '_B6.TIF'))
 	    georef.exportCSVfile(centerlines, widthMap, gm, os.path.join(save_dir, landsat_image + '.csv'))
 
-	    #georef.saveAsGeoTiff(gm, nms, os.path.join(save_dir, landsat_image + '_NMS.TIF'))
-
-	    #cv2.imwrite(os.path.join(save_dir, landsat_image + '_NMS.TIF'), nms)
+	    nms = nms * 16 #12 to 16 bit range
+	    nms = preprocess.double2im(nms, 'uint16')
+	    georef.saveAsGeoTiff(gm, nms, os.path.join(save_dir, 'geotiff', landsat_image + '_NMS.TIF'))
 
 if __name__ == '__main__':
 
