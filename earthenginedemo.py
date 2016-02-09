@@ -9,6 +9,7 @@ import ee
 import zipfile
 import os
 import csv
+import time
 from StringIO import StringIO
 
 download_dest = "/home/leo/landsat8_median/"
@@ -43,18 +44,22 @@ with open('/home/leo/Documents/git/NARWidth_scene_list.csv', 'rb') as csvfile:
 			print e
 			continue
 
-		response = urllib2.urlopen(zipurl)
+		try:
+			response = urllib2.urlopen(zipurl)
+		except Exception, e:
+			print e
+			print 'waiting'
+			time.sleep(60)
+			response = urllib2.urlopen(zipurl)
+
 		filedata= response.read()
-		zipfile = zipfile.ZipFile(StringIO(filedata))
 
 		savepath = os.path.join(download_dest, 'p' + str(wrs_path) + 'r' + str(wrs_row))
+		with open(savepath + '.zip', 'w') as f:
+			f.write(filedata)
 
-		zipfile.extractall(savepath)
-		zipfile.close()
+		#zipfile = zipfile.ZipFile(StringIO(filedata))
+		#zipfile.extractall(savepath)
+		#zipfile.close()
 
-
-
-
-
-
-
+		
