@@ -43,7 +43,7 @@ def extractCenterlines(orient, psi):
     return nms
 
 
-def thresholdCenterlines(nms, tLow=0.1, tHigh=0.3):
+def thresholdCenterlines(nms, tLow=0.01, tHigh=0.08):
     """ Use a continuity-preserving hysteresis thresholding to classify
     centerlines.
     
@@ -58,11 +58,8 @@ def thresholdCenterlines(nms, tLow=0.1, tHigh=0.3):
     centerlines -- a binary matrix that indicates centerline locations
     """
     
-    # TODO: tune parameters on a dataset
-    
-    maxVal = np.max(nms)
-    strongCenterline    = nms >= tHigh * maxVal
-    centerlineCandidate = nms >= tLow * maxVal
+    strongCenterline    = nms >= tHigh
+    centerlineCandidate = nms >= tLow
 
     # Find connected components that has at least one strong centerline pixel
     strel = np.ones((3, 3), dtype=bool)

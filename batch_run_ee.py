@@ -14,12 +14,12 @@ import shutil
 import ntpath
 
 base_dir = "/home/leo/landsat8_median/"
-save_dir = "/home/leo/csv/" #"/home/leo/geotiff/"
+save_dir = "/run/media/leo/Backup/cne_output/" #"/home/leo/geotiff/"
 landsat_images = glob.glob(base_dir + '*.zip')
 
 def chunks(l, n):
-	n = max(1, n)
-	return [l[i:i + n] for i in range(0, len(l), n)]
+    n = max(1, n)
+    return [l[i:i + n] for i in range(0, len(l), n)]
 
 def batch_compute(landsat_images):
 
@@ -38,12 +38,6 @@ def batch_compute(landsat_images):
 
 		temp_im_dir = glob.glob(temp_dir + '/*.tif')[0]
 		I1 = cv2.imread(temp_im_dir, cv2.IMREAD_UNCHANGED)
-		#adjust input
-		mask = I1 == 0
-		I1 = I1 + 0.5
-		I1[I1<0] = 0
-		I1[mask] = 0
-		I1 = I1/1.5
 
 		gm = georef.loadGeoMetadata(temp_im_dir)
 		shutil.rmtree(temp_dir)
@@ -51,18 +45,8 @@ def batch_compute(landsat_images):
 		psi, widthMap, orient = singularity_index.applyMMSI(I1, filters)
 
 		nms = delineate.extractCenterlines(orient, psi)
+		centerlines = thresholdCenterlines(nms)
 
-		#nms = cv2.normalize(nms, None, 0, 255, cv2.NORM_MINMAX)
-		#nms = cv2.equalizeHist(np.array(nms, dtype='uint8'))
-
-		# Create a mask of valid pixels
-		val_mask = I1 != 0
-		val_mask = cv2.erode(np.array(val_mask, np.uint8), np.ones((44,44),np.uint8))
-		nms[val_mask == 0] = 0
-
-		centerlines = delineate.thresholdCenterlines(nms, tLow=0.01, tHigh=0.1)
-		nms[centerlines == 0] = 0
-		centerlines = nms
 		#save results
 		wrsname = ntpath.basename(landsat_image)
 		georef.exportCSVfile(centerlines, widthMap, gm, os.path.join(save_dir, wrsname[:-4] + '.csv'))
@@ -72,4 +56,13 @@ def batch_compute(landsat_images):
 		georef.saveAsGeoTiff(gm, nms, os.path.join(save_dir, wrsname[:-4] + '.tif'))
 
 if __name__ == '__main__':
-	batch_compute(landsat_images)
+	nrCores = 2
+	filelist_parts = chunks(landsat_images, (len(landsat_images)+1)/nrCores)
+
+	p0 = Process(target=batch_compute, args=([filelist_parts[0]]))
+	p0.start()
+
+	time.sleep(55)
+
+	p1 = Process(target=batch_compute, args=([filelist_parts[1]]))
+	p1.start()
