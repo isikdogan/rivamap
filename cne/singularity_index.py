@@ -156,18 +156,20 @@ def applyMMSI(I1, filters):
             psi_max = psi_scale
             psi_sum = psi_scale
             orient = angles
-            widthMap = filters.minScale * (np.sqrt(2)**s) * (psi_scale)
+            #widthMap = filters.minScale * (np.sqrt(2)**s) * (psi_scale)
+            widthMap = np.ones(psi_scale.shape) * filters.minScale * (np.sqrt(2)**s)
             psi = psi_scale**2
         else:
             idx = psi_scale > psi_max
             psi_max[idx] = psi_scale[idx]
             psi_sum = psi_sum + psi_scale
             orient[idx] = angles[idx]
-            widthMap = widthMap + filters.minScale * (np.sqrt(2)**s) * (psi_scale)
+            widthMap[idx] = filters.minScale * (np.sqrt(2)**s)
+            #widthMap = widthMap + filters.minScale * (np.sqrt(2)**s) * (psi_scale)
             psi = psi + psi_scale**2
         
 
-    widthMap[psi_sum>0] = widthMap[psi_sum>0] / psi_sum[psi_sum>0]
+    #widthMap[psi_sum>0] = widthMap[psi_sum>0] / psi_sum[psi_sum>0]
     psi = np.sqrt(psi)
 
     return psi, widthMap, orient
