@@ -13,7 +13,8 @@ import cv2
 from cne import singularity_index, delineate, preprocess, georef
 
 # Read the input image
-I1 = cv2.imread("cac63f19888ef064b4df2427a81bb1ec.nd.tif", cv2.IMREAD_UNCHANGED)
+I1 = cv2.imread("1000.tif", cv2.IMREAD_UNCHANGED)
+gm = georef.loadGeoMetadata("1000.tif")
 
 # Create the filters that are needed to compute the singularity index
 filters = singularity_index.SingularityIndexFilters()
@@ -23,23 +24,29 @@ psi, widthMap, orient = singularity_index.applyMMSI(I1, filters)
 
 # Extract channel centerlines
 nms = delineate.extractCenterlines(orient, psi)
-centerlines = delineate.thresholdCenterlines(nms)
+centerlines = delineate.thresholdCenterlines(nms, tLow=0.01, tHigh=0.08)
+
+# remove the overlapping response
+numRow, numCol = centerlines.shape
+padRow = numRow/10
+padCol = numCol/10
+centerlines[0:padRow, :] = 0
+centerlines[:, 0:padCol] = 0
+centerlines[-padRow:, :] = 0
+centerlines[:, -padCol:] = 0
 
 # Generate a raster map of the extracted channels
-raster = delineate.generateRasterMap(centerlines, orient, widthMap)
+raster = delineate.generateRasterMap(centerlines, orient, widthMap, thickness=1)
 
 # Save the images that are created at the intermediate steps
 cv2.imwrite("mndwi.TIF", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
-cv2.imwrite("psi.TIF", cv2.normalize(psi, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("nms.TIF", cv2.normalize(nms, None, 0, 255, cv2.NORM_MINMAX))
 cv2.imwrite("centerlines.TIF", centerlines.astype(int)*255)
-cv2.imwrite("rasterMap.TIF", cv2.normalize(raster, None, 0, 255, cv2.NORM_MINMAX))
 
 # An example of exporting a geotiff file
-gm = georef.loadGeoMetadata("LC81380452015067LGN00_B6.TIF")
-psi = preprocess.contrastStretch(psi)
-psi = preprocess.double2im(psi, 'uint16')
-georef.saveAsGeoTiff(gm, psi, "psi_geotagged.TIF")
+raster = preprocess.contrastStretch(raster)
+raster = preprocess.double2im(raster, 'uint16')
+georef.saveAsGeoTiff(gm, raster, "raster_geotagged.TIF")
 
 # Export the (coordinate, width) pairs to a comma separated text file
 georef.exportCSVfile(centerlines, widthMap, gm, "results.csv")

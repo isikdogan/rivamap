@@ -11,8 +11,12 @@ import os
 import csv
 import time
 from StringIO import StringIO
+import logging
+
+logging.basicConfig(filename='warnings.log',level=logging.DEBUG)
 
 download_dest = "/home/leo/landsat8_1x1_grid/"
+check_dest = "/home/leo/landsat_1x1_new/"
 
 ee.Initialize()
 
@@ -28,7 +32,19 @@ northamerica_tiles = ee.List(intersectJoined.first().get('scenes'))
 time.sleep(15)
 
 numTiles = 4366
-for i in range(745, numTiles - 1):
+for i in range(35, numTiles - 1):
+
+	checkpath = os.path.join(check_dest, 'tile' + str(i) + '.zip')
+	savepath = os.path.join(download_dest, 'tile' + str(i) + '.zip')
+
+	#check if file exists
+	if(os.path.isfile(checkpath)):
+		logging.warning('tile:' + str(i) + ' exists, skipping...')
+		continue
+
+	if(os.path.isfile(savepath)):
+		logging.warning('tile:' + str(i) + ' exists, skipping...')
+		continue
 
 	print 'downloading ' + 'tile:' + str(i)
 
@@ -42,13 +58,14 @@ for i in range(745, numTiles - 1):
 	try:
 		zipurl = ndwi.getDownloadURL({'scale': 30})
 	except Exception, e:
-		print e
+		logging.warning(e)
 		continue
 
 	try:
 		response = urllib2.urlopen(zipurl, timeout=600)
+		logging.info('downloaded tile' + str(i))
 	except Exception, e:
-		print e
+		logging.warning(e)
 		print 'waiting'
 		time.sleep(30)
 		continue
@@ -57,6 +74,6 @@ for i in range(745, numTiles - 1):
 
 	filedata= response.read()
 
-	savepath = os.path.join(download_dest, 'tile' + str(i))
-	with open(savepath + '.zip', 'w') as f:
+
+	with open(savepath, 'w') as f:
 		f.write(filedata)
