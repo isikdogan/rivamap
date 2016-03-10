@@ -100,7 +100,7 @@ def applyMMSI(I1, filters):
         raise ValueError('This function inputs only a singe channel image')
         
     R, C = I1.shape
-
+    
     # Compute the multiscale singularity index
     for s in range(0, filters.nrScales):
         print "Processing scale: " + str(s)
@@ -150,26 +150,68 @@ def applyMMSI(I1, filters):
         # Suppress island response (channels have negative response)
         psi_scale[psi_scale>0] = 0
         psi_scale = np.abs(psi_scale)
-        
-        # Compute the channel width, dominant orientation, and norm of the response across scales
+                
+        # Find the dominant scale, orientation, and norm of the response across scales
         if s == 0:
-            psi_max = psi_scale
-            psi_sum = psi_scale
+            # response buffer (we need the neighbors of the dominant scale for width estimation)
+            psi_prev = np.zeros(psi_scale.shape)
+            psi_curr = np.zeros(psi_scale.shape)
+            psi_next = psi_scale
+            
+            # response at the dominant scale and its neighbors
+            psi_max_curr = np.zeros(psi_scale.shape)
+            psi_max_prev = np.zeros(psi_scale.shape)
+            psi_max_next = np.zeros(psi_scale.shape)
+            
+            dominant_scale_idx = np.zeros(psi_scale.shape)
             orient = angles
-            #widthMap = filters.minScale * (np.sqrt(2)**s) * (psi_scale)
-            widthMap = np.ones(psi_scale.shape) * filters.minScale * (np.sqrt(2)**s)
+            psi_max = psi_scale
             psi = psi_scale**2
+                        
         else:
-            idx = psi_scale > psi_max
+            psi_prev = psi_curr
+            psi_curr = psi_next
+            psi_next = psi_scale
+            
+            idx_curr = psi_curr > psi_max_curr
+            psi_max_curr[idx_curr] = psi_curr[idx_curr]
+            psi_max_prev[idx_curr] = psi_prev[idx_curr]
+            psi_max_next[idx_curr] = psi_next[idx_curr]
+            
+            idx = psi_scale > psi_max            
             psi_max[idx] = psi_scale[idx]
-            psi_sum = psi_sum + psi_scale
+            dominant_scale_idx[idx] = s
             orient[idx] = angles[idx]
-            widthMap[idx] = filters.minScale * (np.sqrt(2)**s)
-            #widthMap = widthMap + filters.minScale * (np.sqrt(2)**s) * (psi_scale)
             psi = psi + psi_scale**2
-        
-
-    #widthMap[psi_sum>0] = widthMap[psi_sum>0] / psi_sum[psi_sum>0]
+            
+    # Check if the coarsest scale has the maximum response
+    psi_prev = psi_curr
+    psi_curr = psi_next
+    idx_curr = psi_curr > psi_max_curr
+    psi_max_curr[idx_curr] = psi_curr[idx_curr]
+    psi_max_prev[idx_curr] = psi_prev[idx_curr]
+    psi_max_next[idx_curr] = 0    
+    
+    # Euclidean norm of the response across scales
     psi = np.sqrt(psi)
+    
+    # Estimate the width by fitting a quadratic spline to the response at the 
+    # dominant scale and its neighbors
+    s_prev = filters.minScale * (np.sqrt(2)**(dominant_scale_idx-1))
+    s_max = filters.minScale * (np.sqrt(2)**(dominant_scale_idx))
+    s_next = filters.minScale * (np.sqrt(2)**(dominant_scale_idx+1))
+
+    d = (s_prev - s_max) * (s_prev - s_next) * (s_max - s_next)
+    A = (s_next * (psi_max - psi_max_prev) + \
+        s_max * (psi_max_prev - psi_max_next) + \
+        s_prev * (psi_max_next - psi_max)) / d
+    B = (s_next*s_next * (psi_max_prev - psi_max) + \
+        s_max*s_max * (psi_max_next - psi_max_prev) + \
+        s_prev*s_prev * (psi_max - psi_max_next)) / d
+    C = (s_max * s_next * (s_max - s_next) * psi_max_prev + \
+        s_next * s_prev * (s_next - s_prev) * psi_max + s_prev * s_max * \
+        (s_prev - s_max) * psi_max_next) / d
+    widthMap = np.zeros(psi.shape)
+    widthMap[psi>0] = -B[psi>0] / (2*A[psi>0])
 
     return psi, widthMap, orient

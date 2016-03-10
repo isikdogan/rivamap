@@ -10,8 +10,8 @@
 SELECT DISTINCT C.* FROM
 (
 	SELECT insitu.lat, insitu.lon, insitu.insituwidth, insitu.landsat_width, cne.width as cne_width,
-		ABS(cne.width - insitu.insituwidth) as absdiff,
-		MIN(ABS(cne.width - insitu.insituwidth)) OVER (PARTITION BY insitu.lat, insitu.lon) as minabsdiff
+		ABS(cne.width * 55 - insitu.insituwidth) as absdiff,
+		MIN(ABS(cne.width * 55 - insitu.insituwidth)) OVER (PARTITION BY insitu.lat, insitu.lon) as minabsdiff
 	FROM insitu INNER JOIN cne
 	ON ST_DWithin(insitu.geog, cne.geog, insitu.insituwidth)
 ) as C
