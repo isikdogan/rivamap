@@ -74,7 +74,7 @@ def thresholdCenterlines(nms, tLow=0.1, tHigh=0.3):
     return centerlines
 
 
-def generateRasterMap(centerlines, orient, widthMap, thickness=5):
+def generateRasterMap(centerlines, orient, widthMap, thickness=1):
     """ Generate a raster map of channels. It draws a line of length
     w(x, y) and orientation θ(x, y) at each spatial location.
     
