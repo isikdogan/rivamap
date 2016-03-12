@@ -208,9 +208,6 @@ def applyMMSI(I1, filters):
     B = (s_next*s_next * (psi_max_prev - psi_max) + \
         s_max*s_max * (psi_max_next - psi_max_prev) + \
         s_prev*s_prev * (psi_max - psi_max_next)) / d
-    C = (s_max * s_next * (s_max - s_next) * psi_max_prev + \
-        s_next * s_prev * (s_next - s_prev) * psi_max + s_prev * s_max * \
-        (s_prev - s_max) * psi_max_next) / d
     widthMap = np.zeros(psi.shape)
     widthMap[psi>0] = -B[psi>0] / (2*A[psi>0])
 
