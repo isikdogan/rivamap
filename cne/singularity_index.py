@@ -201,13 +201,12 @@ def applyMMSI(I1, filters):
     s_max = filters.minScale * (np.sqrt(2)**(dominant_scale_idx))
     s_next = filters.minScale * (np.sqrt(2)**(dominant_scale_idx+1))
 
-    d = (s_prev - s_max) * (s_prev - s_next) * (s_max - s_next)
-    A = (s_next * (psi_max - psi_max_prev) + \
+    A = s_next * (psi_max - psi_max_prev) + \
         s_max * (psi_max_prev - psi_max_next) + \
-        s_prev * (psi_max_next - psi_max)) / d
-    B = (s_next*s_next * (psi_max_prev - psi_max) + \
+        s_prev * (psi_max_next - psi_max)
+    B = s_next*s_next * (psi_max_prev - psi_max) + \
         s_max*s_max * (psi_max_next - psi_max_prev) + \
-        s_prev*s_prev * (psi_max - psi_max_next)) / d
+        s_prev*s_prev * (psi_max - psi_max_next)
     widthMap = np.zeros(psi.shape)
     widthMap[psi>0] = -B[psi>0] / (2*A[psi>0])
 
