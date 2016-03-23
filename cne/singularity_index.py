@@ -209,5 +209,6 @@ def applyMMSI(I1, filters):
         s_prev*s_prev * (psi_max - psi_max_next)
     widthMap = np.zeros(psi.shape)
     widthMap[psi>0] = -B[psi>0] / (2*A[psi>0])
+    widthMap = widthMap * 1.6 #sigma to width conversion
 
     return psi, widthMap, orient

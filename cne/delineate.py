@@ -43,7 +43,7 @@ def extractCenterlines(orient, psi):
     return nms
 
 
-def thresholdCenterlines(nms, tLow=0.1, tHigh=0.3):
+def thresholdCenterlines(nms, tLow=None, tHigh=None):
     """ Use a continuity-preserving hysteresis thresholding to classify
     centerlines.
     
@@ -58,11 +58,14 @@ def thresholdCenterlines(nms, tLow=0.1, tHigh=0.3):
     centerlines -- a binary matrix that indicates centerline locations
     """
     
-    # TODO: tune parameters on a dataset
+    # Default parameters
+    if(tLow == None):
+        tLow= 0.1 * np.max(nms)
+    if(tHigh == None):
+        tHigh = 0.3 * np.max(nms)
     
-    maxVal = np.max(nms)
-    strongCenterline    = nms >= tHigh * maxVal
-    centerlineCandidate = nms >= tLow * maxVal
+    strongCenterline    = nms >= tHigh
+    centerlineCandidate = nms >= tLow
 
     # Find connected components that has at least one strong centerline pixel
     strel = np.ones((3, 3), dtype=bool)
@@ -74,7 +77,7 @@ def thresholdCenterlines(nms, tLow=0.1, tHigh=0.3):
     return centerlines
 
 
-def generateRasterMap(centerlines, orient, widthMap, thickness=1):
+def generateRasterMap(centerlines, orient, widthMap, thickness=3):
     """ Generate a raster map of channels. It draws a line of length
     w(x, y) and orientation θ(x, y) at each spatial location.
     
