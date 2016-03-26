@@ -43,7 +43,7 @@ def extractCenterlines(orient, psi):
     return nms
 
 
-def thresholdCenterlines(nms, tLow=None, tHigh=None):
+def thresholdCenterlines(nms, tLow=0.01, tHigh=0.08):
     """ Use a continuity-preserving hysteresis thresholding to classify
     centerlines.
     
@@ -57,13 +57,7 @@ def thresholdCenterlines(nms, tLow=None, tHigh=None):
     Returns:
     centerlines -- a binary matrix that indicates centerline locations
     """
-    
-    # Default parameters
-    if(tLow == None):
-        tLow= 0.1 * np.max(nms)
-    if(tHigh == None):
-        tHigh = 0.3 * np.max(nms)
-    
+        
     strongCenterline    = nms >= tHigh
     centerlineCandidate = nms >= tLow
 

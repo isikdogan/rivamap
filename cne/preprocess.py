@@ -25,7 +25,6 @@ def mndwi(green, mir):
         
     numerator = green-mir
     denominator = green+mir
-    numerator[numerator<0] = 0
     numerator[denominator==0] = 0
     denominator[denominator==0] = 1
     

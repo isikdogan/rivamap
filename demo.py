@@ -19,7 +19,6 @@ B6 = cv2.imread("LC81380452015067LGN00_B6.TIF", cv2.IMREAD_UNCHANGED)
 # Compute the modified normalized difference water index of the input
 # and contrast stretch the result
 I1 = preprocess.mndwi(B3, B6)
-I1 = preprocess.contrastStretch(I1)
 
 # Create the filters that are needed to compute the singularity index
 filters = singularity_index.SingularityIndexFilters()
