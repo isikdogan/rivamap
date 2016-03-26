@@ -13,11 +13,11 @@ from scipy.signal import fftconvolve
 
 class SingularityIndexFilters:
     
-    def __init__(self, minScale=1.5, nrScales=15):
+    def __init__(self, minScale=1.2, nrScales=15):
         """ Initializes the parameters and filters
     
         Keyword arguments:
-        minScale -- minimum scale sigma (default 1.5 pixels)
+        minScale -- minimum scale sigma (default 1.2 pixels)
         nrScales -- number of scales (default 15)
         """
     
@@ -151,8 +151,6 @@ def applyMMSI(I1, filters):
         psi_scale[psi_scale>0] = 0
         psi_scale = np.abs(psi_scale)
 
-        # Gamma normalize response
-        psi_scale = psi_scale * (s**0.75)
                 
         # Find the dominant scale, orientation, and norm of the response across scales
         if s == 0:
