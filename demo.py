@@ -52,14 +52,14 @@ georef.saveAsGeoTiff(gm, raster, "raster_geotagged.TIF")
 georef.exportCSVfile(centerlines, widthMap, gm, "results.csv")
 
 # Quiver plot
-psi_s = psi[50:-150:4,250:-250:4]
-orient_s = orient[50:-150:4,250:-250:4]
+#psi_s = psi[50:-150:4,250:-250:4]
+#orient_s = orient[50:-150:4,250:-250:4]
 
-U = -psi_s * np.sin(orient_s)
-V = psi_s * np.cos(orient_s)
+#U = -psi_s * np.sin(orient_s)
+#V = psi_s * np.cos(orient_s)
 
-plt.figure(figsize=(9,9))
-ax = plt.gca()
-ax.invert_yaxis()
-Q = plt.quiver(U, V, scale=4, width=0.001, pivot='mid', headwidth=0, minlength=0)
-plt.savefig("quiver.pdf")
+#plt.figure(figsize=(9,9))
+#ax = plt.gca()
+#ax.invert_yaxis()
+#Q = plt.quiver(U, V, scale=4, width=0.001, pivot='mid', headwidth=0, minlength=0)
+#plt.savefig("quiver.pdf")

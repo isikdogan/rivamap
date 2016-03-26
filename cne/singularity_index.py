@@ -150,6 +150,9 @@ def applyMMSI(I1, filters):
         # Suppress island response (channels have negative response)
         psi_scale[psi_scale>0] = 0
         psi_scale = np.abs(psi_scale)
+
+        # Gamma normalize response
+        psi_scale = psi_scale * (s**0.75)
                 
         # Find the dominant scale, orientation, and norm of the response across scales
         if s == 0:
