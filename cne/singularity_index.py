@@ -13,12 +13,12 @@ from scipy.signal import fftconvolve
 
 class SingularityIndexFilters:
     
-    def __init__(self, minScale=1.5, nrScales=16):
+    def __init__(self, minScale=1.5, nrScales=15):
         """ Initializes the parameters and filters
     
         Keyword arguments:
         minScale -- minimum scale sigma (default 1.5 pixels)
-        nrScales -- number of scales (default 16)
+        nrScales -- number of scales (default 15)
         """
     
         self.minScale = minScale
@@ -150,6 +150,9 @@ def applyMMSI(I1, filters):
         # Suppress island response (channels have negative response)
         psi_scale[psi_scale>0] = 0
         psi_scale = np.abs(psi_scale)
+
+        # Gamma normalize response
+        psi_scale = psi_scale * (s**0.75)
                 
         # Find the dominant scale, orientation, and norm of the response across scales
         if s == 0:
@@ -201,14 +204,13 @@ def applyMMSI(I1, filters):
     s_max = filters.minScale * (np.sqrt(2)**(dominant_scale_idx))
     s_next = filters.minScale * (np.sqrt(2)**(dominant_scale_idx+1))
 
-    A = s_next * (psi_max - psi_max_prev) + \
+    A = (s_next * (psi_max - psi_max_prev) + \
         s_max * (psi_max_prev - psi_max_next) + \
-        s_prev * (psi_max_next - psi_max)
-    B = s_next*s_next * (psi_max_prev - psi_max) + \
+        s_prev * (psi_max_next - psi_max))
+    B = (s_next*s_next * (psi_max_prev - psi_max) + \
         s_max*s_max * (psi_max_next - psi_max_prev) + \
-        s_prev*s_prev * (psi_max - psi_max_next)
+        s_prev*s_prev * (psi_max - psi_max_next))
     widthMap = np.zeros(psi.shape)
     widthMap[psi>0] = -B[psi>0] / (2*A[psi>0])
-    widthMap = widthMap * 1.6 #sigma to width conversion
 
     return psi, widthMap, orient
