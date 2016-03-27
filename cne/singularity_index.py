@@ -13,11 +13,11 @@ from scipy.signal import fftconvolve
 
 class SingularityIndexFilters:
     
-    def __init__(self, minScale=1.5, nrScales=15):
+    def __init__(self, minScale=1.2, nrScales=15):
         """ Initializes the parameters and filters
     
         Keyword arguments:
-        minScale -- minimum scale sigma (default 1.5 pixels)
+        minScale -- minimum scale sigma (default 1.2 pixels)
         nrScales -- number of scales (default 15)
         """
     
@@ -38,7 +38,7 @@ class SingularityIndexFilters:
         self.Gdebias = cv2.getGaussianKernel(2*ksized+1, sigmad)
     
         # Set sigma and kernel size for the second and first order derivatives
-        sigma2   = self.minScale
+        sigma2   = float(self.minScale)
         sigma1   = self.minScale*1.7754
         ksize2   = int(sigma2*3) + 1
         ksize1   = int(sigma1*3) + 1
@@ -152,7 +152,7 @@ def applyMMSI(I1, filters):
         psi_scale = np.abs(psi_scale)
 
         # Gamma normalize response
-        psi_scale = psi_scale * (s**0.75)
+        psi_scale = psi_scale * filters.minScale**2
                 
         # Find the dominant scale, orientation, and norm of the response across scales
         if s == 0:
@@ -204,12 +204,12 @@ def applyMMSI(I1, filters):
     s_max = filters.minScale * (np.sqrt(2)**(dominant_scale_idx))
     s_next = filters.minScale * (np.sqrt(2)**(dominant_scale_idx+1))
 
-    A = (s_next * (psi_max - psi_max_prev) + \
+    A = s_next * (psi_max - psi_max_prev) + \
         s_max * (psi_max_prev - psi_max_next) + \
-        s_prev * (psi_max_next - psi_max))
-    B = (s_next*s_next * (psi_max_prev - psi_max) + \
+        s_prev * (psi_max_next - psi_max)
+    B = s_next*s_next * (psi_max_prev - psi_max) + \
         s_max*s_max * (psi_max_next - psi_max_prev) + \
-        s_prev*s_prev * (psi_max - psi_max_next))
+        s_prev*s_prev * (psi_max - psi_max_next)
     widthMap = np.zeros(psi.shape)
     widthMap[psi>0] = -B[psi>0] / (2*A[psi>0])
 
