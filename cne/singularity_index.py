@@ -38,7 +38,7 @@ class SingularityIndexFilters:
         self.Gdebias = cv2.getGaussianKernel(2*ksized+1, sigmad)
     
         # Set sigma and kernel size for the second and first order derivatives
-        sigma2   = self.minScale
+        sigma2   = float(self.minScale)
         sigma1   = self.minScale*1.7754
         ksize2   = int(sigma2*3) + 1
         ksize1   = int(sigma1*3) + 1
@@ -151,6 +151,8 @@ def applyMMSI(I1, filters):
         psi_scale[psi_scale>0] = 0
         psi_scale = np.abs(psi_scale)
 
+        # Gamma normalize response
+        psi_scale = psi_scale * filters.minScale**2
                 
         # Find the dominant scale, orientation, and norm of the response across scales
         if s == 0:
