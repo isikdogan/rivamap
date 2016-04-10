@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 from scipy.ndimage import sum as ndsum
 from scipy.ndimage import label as ndlabel
-
+from cne import preprocess
 
 def extractCenterlines(orient, psi):
     """ Use non-maxima suppression to extract centerlines.
@@ -43,7 +43,7 @@ def extractCenterlines(orient, psi):
     return nms
 
 
-def thresholdCenterlines(nms, tLow=0.01, tHigh=0.08):
+def thresholdCenterlines(nms, tLow=0.012, tHigh=0.12, bimodal=True):
     """ Use a continuity-preserving hysteresis thresholding to classify
     centerlines.
     
@@ -57,7 +57,13 @@ def thresholdCenterlines(nms, tLow=0.01, tHigh=0.08):
     Returns:
     centerlines -- a binary matrix that indicates centerline locations
     """
-        
+
+    if bimodal:
+        #Otsu's algorithm
+        nms = preprocess.double2im(nms, 'uint8')
+        tHigh,_ = cv2.threshold(nms, nms.min(), nms.max(), cv2.THRESH_OTSU)
+        tLow = tHigh * 0.1
+
     strongCenterline    = nms >= tHigh
     centerlineCandidate = nms >= tLow
 

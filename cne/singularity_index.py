@@ -74,7 +74,7 @@ class SingularityIndexFilters:
         self.isCreated = True
         
 
-def applyMMSI(I1, filters):
+def applyMMSI(I1, filters, togglePolarity=False):
     """ Apply the filters to a given input image to compute the
     modified multiscale singularity index response. Estimate the width
     and the dominant orientation angle for each spatial location.
@@ -83,6 +83,8 @@ def applyMMSI(I1, filters):
     I1 -- input image (e.g. Landsat NIR band or MNDWI)
     filters -- an instance of SingularityIndexFilters class that contains
                precomputed filters
+    togglePolarity -- changes polarity, use if the rivers are darker
+                      than land in the input image (i.e. SAR images)
 
     Returns:
     psi -- the singularity index response
@@ -147,7 +149,11 @@ def applyMMSI(I1, filters):
             psi_scale = cv2.resize(psi_scale, (C, R), interpolation = cv2.INTER_CUBIC)
             angles = cv2.resize(angles, (C, R), interpolation = cv2.INTER_NEAREST)
 
-        # Suppress island response (channels have negative response)
+        # Toggle polarity if needed
+        if togglePolarity:
+            psi_scale = -psi_scale
+
+        # Suppress island response (channels have negative response unless the polarity is changed)
         psi_scale[psi_scale>0] = 0
         psi_scale = np.abs(psi_scale)
 
