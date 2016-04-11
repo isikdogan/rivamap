@@ -51,8 +51,8 @@ def thresholdCenterlines(nms, tLow=0.012, tHigh=0.12, bimodal=True):
     nms -- Non-maxima suppressed singularity index response
 
     Keyword Arguments:
-    tLow -- lower threshold (default 0.1)
-    tHigh -- higher threshold (default 0.3)
+    tLow -- lower threshold (automatically set if bimodal=True)
+    tHigh -- higher threshold (automatically set if bimodal=True)
 
     Returns:
     centerlines -- a binary matrix that indicates centerline locations
@@ -75,37 +75,3 @@ def thresholdCenterlines(nms, tLow=0.012, tHigh=0.12, bimodal=True):
     centerlines = centerlines[cclabels]
 
     return centerlines
-
-
-def generateRasterMap(centerlines, orient, widthMap, thickness=3):
-    """ Generate a raster map of channels. It draws a line of length
-    w(x, y) and orientation θ(x, y) at each spatial location.
-    
-    Inputs:
-    centerlines -- a binary matrix that indicates centerline locations
-    orient -- local orientation at each spatial location (x,y)
-    widthMap -- estimated width at each spatial location (x,y)
-    
-    Keyword Argument:
-    thickness -- thickness of the lines (default 5)
-
-    Returns:
-    raster -- the raster map
-    """
-
-    centerlineWidth       = widthMap[centerlines]
-    centerlineOrientation = orient[centerlines]
-
-    [row,col] = np.where(centerlines)
-
-    x_off = -centerlineWidth * np.cos(centerlineOrientation)
-    y_off =  centerlineWidth * np.sin(centerlineOrientation)
-    lines = np.vstack((col-x_off, row-y_off, col+x_off, row+y_off)).T
-
-    raster = np.zeros(centerlines.shape)
-
-    for i in range(0, len(lines)):
-        cv2.line(raster, (int(lines[i,0]), int(lines[i,1])), \
-                         (int(lines[i,2]), int(lines[i,3])), 255, thickness)
-
-    return raster

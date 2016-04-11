@@ -10,7 +10,7 @@ Example use of the channel network extraction framework
 """
 
 import cv2
-from cne import singularity_index, delineate, preprocess, georef
+from cne import singularity_index, delineate, preprocess, georef, visualization
 
 # Read bands 3 and 6 of an example Landsat 8 image
 B3 = cv2.imread("LC81380452015067LGN00_B3.TIF", cv2.IMREAD_UNCHANGED)
@@ -31,7 +31,13 @@ nms = delineate.extractCenterlines(orient, psi)
 centerlines = delineate.thresholdCenterlines(nms)
 
 # Generate a raster map of the extracted channels
-raster = delineate.generateRasterMap(centerlines, orient, widthMap)
+raster = visualization.generateRasterMap(centerlines, orient, widthMap)
+
+# Generate a vector map of the extracted channels
+#visualization.generateVectorMap(centerlines, orient, widthMap, saveDest = "vector.pdf")
+
+# Generate a quiver plot
+#visualization.quiverPlot(psi, orient, saveDest = "quiver.pdf")
 
 # Save the images that are created at the intermediate steps
 cv2.imwrite("mndwi.TIF", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
@@ -41,7 +47,7 @@ cv2.imwrite("centerlines.TIF", centerlines.astype(int)*255)
 cv2.imwrite("rasterMap.TIF", cv2.normalize(raster, None, 0, 255, cv2.NORM_MINMAX))
 
 # An example of exporting a geotiff file
-gm = georef.loadGeoMetadata("LC81380452015067LGN00_B6.TIF")
+gm = georef.loadGeoMetadata("LC81380452015067LGN00_B3.TIF")
 psi = preprocess.contrastStretch(psi)
 psi = preprocess.double2im(psi, 'uint16')
 georef.saveAsGeoTiff(gm, psi, "psi_geotagged.TIF")
