@@ -219,4 +219,8 @@ def applyMMSI(I1, filters, togglePolarity=False):
     widthMap = np.zeros(psi.shape)
     widthMap[psi>0] = -B[psi>0] / (2*A[psi>0])
 
+    # Scaling factor for narrow rivers
+    scalingFactor = 2/(1+np.exp(-8*psi))-1
+    widthMap = scalingFactor * widthMap + 0.5
+
     return psi, widthMap, orient
