@@ -45,7 +45,7 @@ def generateRasterMap(centerlines, orient, widthMap, thickness=3):
     return raster
 
 
-def generateVectorMap(centerlines, orient, widthMap, saveDest, thickness=1):
+def generateVectorMap(centerlines, orient, widthMap, saveDest, thickness=0.2):
     """ Generate a vector map of channels. It draws a line of length
     w(x, y) and orientation θ(x, y) at each spatial location.
     
@@ -56,7 +56,7 @@ def generateVectorMap(centerlines, orient, widthMap, saveDest, thickness=1):
     saveDest -- output figure save destination
     
     Keyword Argument:
-    thickness -- thickness of the lines (default 1)
+    thickness -- thickness of the lines (default 0.2)
     """
 
     centerlineWidth       = widthMap[centerlines]
@@ -84,8 +84,8 @@ def generateVectorMap(centerlines, orient, widthMap, saveDest, thickness=1):
     plt.figure(figsize=(10, 10*aspect_ratio))
     ax = plt.gca()
     ax.invert_yaxis()
-    plt.plot(xlist, ylist,'b-', linewidth=0.2)
-    #plt.plot(col, row,'k.', markersize=0.2)
+    plt.plot(xlist, ylist,'b-', linewidth=thickness)
+    #plt.plot(col, row,'k.', markersize=thickness)
     plt.axis('off')
     plt.savefig(saveDest)
 
