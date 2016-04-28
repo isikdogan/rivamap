@@ -3,15 +3,18 @@
 """
 
 import os
+import glob
 import cv2
 import numpy as np
 from cne import singularity_index, delineate, preprocess, georef
 from multiprocessing import Process
 import time
+import zipfile
+import ntpath
 
-base_dir = "/run/media/leo/Backup/landsat8_north_america/"
-save_dir = "/home/leo/csv/" #"/home/leo/geotiff/"
-landsat_images = os.listdir(base_dir)
+base_dir = "/home/leo/landsat_1x1_new/"
+save_dir = "/run/media/leo/Backup/cne_output/" #"/home/leo/geotiff/"
+landsat_images = glob.glob(base_dir + '*.zip')
 
 def chunks(l, n):
     n = max(1, n)
@@ -25,47 +28,75 @@ def batch_compute(landsat_images):
 
 	for landsat_image in landsat_images:
 
-	    B3 = cv2.imread(os.path.join(base_dir, landsat_image, landsat_image + '_B3.TIF'), cv2.IMREAD_UNCHANGED)
-	    B6 = cv2.imread(os.path.join(base_dir, landsat_image, landsat_image + '_B6.TIF'), cv2.IMREAD_UNCHANGED)
+		temp_dir = os.path.join(save_dir, 'temp')
+		if not os.path.exists(temp_dir):
+			os.makedirs(temp_dir)
 
-	    I1 = preprocess.mndwi(B3, B6)
+		#with zipfile.ZipFile(landsat_image) as zf:
+		#	zf.extractall(temp_dir)
 
-	    psi, widthMap, orient = singularity_index.applyMMSI(I1, filters)
+		#temp_im_dir = glob.glob(temp_dir + '/*.tif')[0]
 
-	    nms = delineate.extractCenterlines(orient, psi)
+		with zipfile.ZipFile(landsat_image) as zf:
+			for zippedname in zf.namelist():
+				if zippedname.endswith('.tif'):
+					zf.extract(zippedname, path = temp_dir)
+					temp_im_dir = os.path.join(temp_dir, zippedname)
 
-	    #nms = cv2.normalize(nms, None, 0, 255, cv2.NORM_MINMAX)
-	    #nms = cv2.equalizeHist(np.array(nms, dtype='uint8'))
+		I1 = cv2.imread(temp_im_dir, cv2.IMREAD_UNCHANGED)
+		#I1 = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_UNCHANGED)
+		gm = georef.loadGeoMetadata(temp_im_dir)
 
-	    # Create a mask of valid pixels
-	    val_mask = B6 > 0
-	    val_mask = cv2.erode(np.array(val_mask, np.uint8), np.ones((221,221),np.uint8))
-	    nms[val_mask == 0] = 0
+		#delete the temp file
+		os.remove(temp_im_dir)
 
-	    #centerlines = delineate.thresholdCenterlines(nms, tLow=0.05, tHigh=0.3)
-	    centerlines = nms
+		psi, widthMap, orient = singularity_index.applyMMSI(I1, filters)
 
-	    gm = georef.loadGeoMetadata(os.path.join(base_dir, landsat_image, landsat_image + '_B6.TIF'))
-	    georef.exportCSVfile(centerlines, widthMap, gm, os.path.join(save_dir, landsat_image + '.csv'))
+		nms = delineate.extractCenterlines(orient, psi)
+		centerlines = delineate.thresholdCenterlines(nms, tLow=0.01, tHigh=0.08)
 
-	    nms = nms * 16 #12 to 16 bit range
-	    nms = preprocess.double2im(nms, 'uint16')
-	    georef.saveAsGeoTiff(gm, nms, os.path.join(save_dir, 'geotiff', landsat_image + '_NMS.TIF'))
+		# remove the overlapping response
+		numRow, numCol = centerlines.shape
+		padRow = numRow/10
+		padCol = numCol/10
+		centerlines[0:padRow, :] = 0
+		centerlines[:, 0:padCol] = 0
+		centerlines[-padRow:, :] = 0
+		centerlines[:, -padCol:] = 0
+
+		#save results
+		wrsname = ntpath.basename(landsat_image)
+		georef.exportCSVfile(centerlines, widthMap, gm, os.path.join(save_dir, wrsname[:-4] + '.csv'))
+
+		nms = nms * 16 #12 to 16 bit range
+		nms = preprocess.double2im(nms, 'uint16')
+		georef.saveAsGeoTiff(gm, nms, os.path.join(save_dir, wrsname[:-4] + '.tif'))
+
 
 if __name__ == '__main__':
-
-	nrCores = 3
+	nrCores = 5
+	print len(landsat_images)
 	filelist_parts = chunks(landsat_images, (len(landsat_images)+1)/nrCores)
 
 	p0 = Process(target=batch_compute, args=([filelist_parts[0]]))
 	p0.start()
 
-	time.sleep(60)
+	time.sleep(20)
 
 	p1 = Process(target=batch_compute, args=([filelist_parts[1]]))
 	p1.start()
 
-	time.sleep(45)
+	time.sleep(20)
 
 	p2 = Process(target=batch_compute, args=([filelist_parts[2]]))
 	p2.start()
+
+	time.sleep(20)
+
+	p3 = Process(target=batch_compute, args=([filelist_parts[3]]))
+	p3.start()
+
+	time.sleep(20)
+
+	p4 = Process(target=batch_compute, args=([filelist_parts[4]]))
+	p4.start()
