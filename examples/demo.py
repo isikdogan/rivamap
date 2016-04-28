@@ -12,12 +12,15 @@ Example use of the channel network extraction framework
 import cv2
 from cne import singularity_index, delineate, preprocess, georef, visualization
 
+#You can download the example images from AWS:
+#http://landsat-pds.s3.amazonaws.com/L8/138/045/LC81380452015067LGN00/LC81380452015067LGN00_B3.TIF
+#http://landsat-pds.s3.amazonaws.com/L8/138/045/LC81380452015067LGN00/LC81380452015067LGN00_B6.TIF
+
 # Read bands 3 and 6 of an example Landsat 8 image
 B3 = cv2.imread("LC81380452015067LGN00_B3.TIF", cv2.IMREAD_UNCHANGED)
 B6 = cv2.imread("LC81380452015067LGN00_B6.TIF", cv2.IMREAD_UNCHANGED)
 
 # Compute the modified normalized difference water index of the input
-# and contrast stretch the result
 I1 = preprocess.mndwi(B3, B6)
 
 # Create the filters that are needed to compute the singularity index
@@ -34,10 +37,10 @@ centerlines = delineate.thresholdCenterlines(nms)
 raster = visualization.generateRasterMap(centerlines, orient, widthMap)
 
 # Generate a vector map of the extracted channels
-#visualization.generateVectorMap(centerlines, orient, widthMap, saveDest = "vector.pdf")
+visualization.generateVectorMap(centerlines, orient, widthMap, saveDest = "vector.pdf")
 
 # Generate a quiver plot
-#visualization.quiverPlot(psi, orient, saveDest = "quiver.pdf")
+visualization.quiverPlot(psi, orient, saveDest = "quiver.pdf")
 
 # Save the images that are created at the intermediate steps
 cv2.imwrite("mndwi.TIF", cv2.normalize(I1, None, 0, 255, cv2.NORM_MINMAX))
