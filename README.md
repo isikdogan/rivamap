@@ -13,4 +13,4 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
 <a href="http://live.ece.utexas.edu/research/cne/img/keithsburg.png"><img src="http://live.ece.utexas.edu/research/cne/img/keithsburg.png" alt="Example Result" height="250"></a>
 <a href="http://live.ece.utexas.edu/research/cne/img/waxlake.png"><img src="http://live.ece.utexas.edu/research/cne/img/waxlake.png" alt="Example Result" height="250"></a>
 <a href="http://live.ece.utexas.edu/research/cne/img/mississippi.png"><img src="http://live.ece.utexas.edu/research/cne/img/mississippi.png" alt="Example Result" height="250"></a>
-<a href="http://live.ece.utexas.edu/research/cne/img/channelmapoverlaid.png"><img src="http://live.ece.utexas.edu/research/cne/img/channelmapoverlaid.png" alt="Example Result" height="250"></a>
+<a href="http://live.ece.utexas.edu/research/cne/img/channelmapoverlaid.png"><img src="http://live.ece.utexas.edu/research/cne/img/ganges.png" alt="Example Result" height="250"></a>
