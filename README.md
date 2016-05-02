@@ -1,9 +1,10 @@
 ## Channel Network Extractor
 
 #### Related papers
-
+<small>
 * Isikdogan, F., A.C. Bovik, and P. Passalacqua (2016). LarMap: A Framework for Creating Large-scale River Maps using Satellite Imagery, unpublished.
 * Isikdogan, F., A.C. Bovik, and P. Passalacqua (2015). Automatic Channel Network Extraction From Remotely Sensed Images by Singularity Analysis, *IEEE Geoscience and Remote Sensing Letters*, 12, 11, 2218-2221. [[**Read at IEEExplore**]](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7192616), [[**PDF**]](http://live.ece.utexas.edu/publications/2015/Isikdogan_GRSL_2015_Channel_Network_Extraction.pdf)
+</small>
 
 #### Example Use
 For an example use of the framework please see [example.ipynb](./examples/example.ipynb)
@@ -16,7 +17,7 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
 <a href="http://live.ece.utexas.edu/research/cne/img/channelmapoverlaid.png"><img src="http://live.ece.utexas.edu/research/cne/img/ganges.png" alt="Example Result" height="250"></a>
 
 #### Reference
-
+<small>
 <table>
     <tbody>
         <tr>
@@ -42,15 +43,12 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Computes the modified normalized difference water index.
                 </p>
                 <p>
-                    <br/>
                      Inputs:
                     <br/>
-                     green: green band (e.g. Landsat 8 band 3)
-                    <br/>
+                     green: green band (e.g. Landsat 8 band 3)<br/>
                      mir: middle infrared band (e.g. Landsat 8 band 6)
                 </p>
                 <p>
-                    <br/>
                      Returns:
                     <br/>
                      mndwi: mndwi response
@@ -104,12 +102,8 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Creates the filters that are needed for computing the modified multiscale singularity index response. The filters can be used for processing many input images once the filters are created.
                 </p>
                 <p>
-                    Keyword arguments:
-                </p>
-                <p>
-                    minScale: minimum scale sigma (default 1.2 pixels)
-                </p>
-                <p>
+                    Keyword arguments:<br/>
+                    minScale: minimum scale sigma (default 1.2 pixels)<br/>
                     nrScales: number of scales (default 15)
                 </p>
             </td>
@@ -125,27 +119,15 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Applies the filters to a given input image to compute the modified multiscale singularity index response. Estimates the width and the dominant orientation angle for each spatial location.
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
-                    I1: input image (e.g. Landsat NIR band or MNDWI)
-                </p>
-                <p>
-                    filters: an instance of SingularityIndexFilters class that contains precomputed filters
-                </p>
-                <p>
+                    Inputs:<br/>
+                    I1: input image (e.g. Landsat NIR band or MNDWI)<br/>
+                    filters: an instance of SingularityIndexFilters class that contains precomputed filters<br/>
                     togglePolarity: changes polarity, use if the rivers are darker than land in the input image (i.e. SAR images)
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
-                    psi: the singularity index response
-                </p>
-                <p>
-                    widthMap: estimated width at each spatial location (x,y)
-                </p>
-                <p>
+                    Returns:<br/>
+                    psi: the singularity index response<br/>
+                    widthMap: estimated width at each spatial location (x,y)<br/>
                     orient: local orientation at each spatial location (x,y)
                 </p>
             </td>
@@ -161,18 +143,12 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Uses the previously computed singularity index response (psi) and the dominant orientation (orient) to extract centerlines.
                 </p>
                 <p>
-                    Inputs: (can be obtained by running applyMMSI function)
-                </p>
-                <p>
-                    psi: the singularity index response
-                </p>
-                <p>
+                    Inputs: (can be obtained by running applyMMSI function)<br/>
+                    psi: the singularity index response<br/>
                     orient: local orientation at each spatial location (x,y)
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
+                    Returns:<br/>
                     nms: Non-maxima suppressed singularity index response (centerlines)
                 </p>
             </td>
@@ -185,33 +161,20 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
             </td>
             <td>
                 <p>
-                    Uses a continuity-preserving hysteresis thresholding to classify
+                    Uses a continuity-preserving hysteresis thresholding to classify centerlines.
                 </p>
                 <p>
-                    centerlines.
-                </p>
-                <p>
-                    Inputs:
-                </p>
-                <p>
+                    Inputs:<br/>
                     nms: Non-maxima suppressed singularity index response
                 </p>
                 <p>
-                    Keyword Arguments:
-                </p>
-                <p>
-                    bimodal: true if the areas of rivers in the image are sufficiently large that the distribution of &psi; is bimodal
-                </p>
-                <p>
-                    tLow: lower threshold (automatically set if bimodal=True)
-                </p>
-                <p>
+                    Keyword Arguments:<br/>
+                    bimodal: true if the areas of rivers in the image are sufficiently large that the distribution of psi is bimodal<br/>
+                    tLow: lower threshold (automatically set if bimodal=True)<br/>
                     tHigh: higher threshold (automatically set if bimodal=True)
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
+                    Returns:<br/>
                     centerlines: a binary matrix that indicates centerline locations
                 </p>
             </td>
@@ -227,15 +190,11 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Reads metadata from a geotiff file.
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
+                    Inputs:<br/>
                     filepath: path to the file
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
+                    Returns:<br/>
                     gm: metadata
                 </p>
             </td>
@@ -251,10 +210,10 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Saves a raster image as a geotiff file
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
-                    gm: georeferencing metadata I: raster image filepath: path to the file
+                    Inputs:<br/>
+                    gm: georeferencing metadata<br/>
+                    I: raster image<br/>
+                    filepath: save destination
                 </p>
             </td>
         </tr>
@@ -269,18 +228,12 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Convers pixel coordinates into longitude and latitude.
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
-                    gm: georeferencing metadata
-                </p>
-                <p>
+                    Inputs:<br/>
+                    gm: georeferencing metadata<br/>
                     x, y: pixel coordinates
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
+                    Returns:<br/>
                     lon, lat: longitude and latitude
                 </p>
             </td>
@@ -296,18 +249,12 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Convers longitude and latitude into pixel coordinates.
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
-                    gm: georeferencing metadata
-                </p>
-                <p>
+                    Inputs:<br/>
+                    gm: georeferencing metadata<br/>
                     lon, lat: longitude and latitude
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
+                    Returns:<br/>
                     x, y: pixel coordinates
                 </p>
             </td>
@@ -323,15 +270,9 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Exports (coordinate, width) pairs to a comma separated text file.
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
-                    centerlines: a binary matrix that indicates centerline locations
-                </p>
-                <p>
-                    widthMap: estimated width at each spatial location (x,y)
-                </p>
-                <p>
+                    Inputs:<br/>
+                    centerlines: a binary matrix that indicates centerline locations<br/>
+                    widthMap: estimated width at each spatial location (x,y)<br/>
                     gm: georeferencing metadata filepath: path to the file
                 </p>
             </td>
@@ -347,27 +288,17 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Generates a raster map of channels. It draws a line of length w(x, y) and orientation &theta;(x, y) at each spatial location.
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
-                    centerlines: a binary matrix that indicates centerline locations
-                </p>
-                <p>
-                    orient: local orientation at each spatial location (x,y)
-                </p>
-                <p>
+                    Inputs:<br/>
+                    centerlines: a binary matrix that indicates centerline locations<br/>
+                    orient: local orientation at each spatial location (x,y)<br/>
                     widthMap: estimated width at each spatial location (x,y)
                 </p>
                 <p>
-                    Keyword Arguments:
-                </p>
-                <p>
+                    Keyword Arguments:<br/>
                     thickness: thickness of the lines (default 3)
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
+                    Returns:<br/>
                     raster: the raster map
                 </p>
             </td>
@@ -383,30 +314,18 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Generates a vector map of channels. It draws a line of length w(x, y) and orientation &theta;(x, y) at each spatial location.
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
-                    centerlines: a binary matrix that indicates centerline locations
-                </p>
-                <p>
-                    orient: local orientation at each spatial location (x,y)
-                </p>
-                <p>
-                    widthMap: estimated width at each spatial location (x,y)
-                </p>
-                <p>
+                    Inputs:<br/>
+                    centerlines: a binary matrix that indicates centerline locations<br/>
+                    orient: local orientation at each spatial location (x,y)<br/>
+                    widthMap: estimated width at each spatial location (x,y)<br/>
                     saveDest: output figure save destination
                 </p>
                 <p>
-                    Keyword Arguments:
-                </p>
-                <p>
+                    Keyword Arguments:<br/>
                     thickness: thickness of the lines (default 0.2)
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
+                    Returns:<br/>
                     None (saves the figure at saveDest)
                 </p>
             </td>
@@ -414,7 +333,7 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
         <tr>
             <td>
                 <p>
-                    Visualization.quiverPlot
+                    visualization.quiverPlot
                 </p>
             </td>
             <td>
@@ -422,26 +341,17 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Generates a quiver plot that shows channel orientation and singularity index response strength.
                 </p>
                 <p>
-                    Inputs:
-                </p>
-                <p>
-                    psi: singularity index response
-                </p>
-                <p>
-                    orient: local orientation at each spatial location (x,y)
-                </p>
-                <p>
+                    Inputs:<br/>
+                    psi: singularity index response<br/>
+                    orient: local orientation at each spatial location (x,y)<br/>
                     saveDest: output figure save destination
                 </p>
                 <p>
-                    Returns:
-                </p>
-                <p>
+                    Returns:<br/>
                     None (saves the figure at saveDest)
                 </p>
             </td>
         </tr>
     </tbody>
 </table>
-
-</hr>
+</small>
