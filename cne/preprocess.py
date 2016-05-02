@@ -12,7 +12,7 @@ import numpy as np
 def mndwi(green, mir):
     """ Computes the modified normalized difference water index
     
-    Input Arguments:
+    Inputs:
     green -- green band (e.g. Landsat 8 band 3)
     mir -- middle infrared band (e.g. Landsat 8 band 6)
     

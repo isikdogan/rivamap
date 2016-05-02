@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def generateRasterMap(centerlines, orient, widthMap, thickness=3):
-    """ Generate a raster map of channels. It draws a line of length
+    """ Generates a raster map of channels. It draws a line of length
     w(x, y) and orientation θ(x, y) at each spatial location.
     
     Inputs:
@@ -46,7 +46,7 @@ def generateRasterMap(centerlines, orient, widthMap, thickness=3):
 
 
 def generateVectorMap(centerlines, orient, widthMap, saveDest, thickness=0.2):
-    """ Generate a vector map of channels. It draws a line of length
+    """ Generates a vector map of channels. It draws a line of length
     w(x, y) and orientation θ(x, y) at each spatial location.
     
     Inputs:
@@ -57,6 +57,9 @@ def generateVectorMap(centerlines, orient, widthMap, saveDest, thickness=0.2):
     
     Keyword Argument:
     thickness -- thickness of the lines (default 0.2)
+
+    Returns:
+    None (saves the figure at saveDest)
     """
 
     centerlineWidth       = widthMap[centerlines]
@@ -91,13 +94,16 @@ def generateVectorMap(centerlines, orient, widthMap, saveDest, thickness=0.2):
 
 
 def quiverPlot(psi, orient, saveDest):
-    """ Generate a quiver plot that shows channel orientation
+    """ Generates a quiver plot that shows channel orientation
     and singularity index response strength.
 
     Inputs:
     psi -- singularity index response
     orient -- local orientation at each spatial location (x,y)
     saveDest -- output figure save destination
+
+    Returns:
+    None (saves the figure at saveDest)
     """
 
     # downsample

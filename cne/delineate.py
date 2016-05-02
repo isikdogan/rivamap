@@ -14,11 +14,10 @@ from scipy.ndimage import label as ndlabel
 from cne import preprocess
 
 def extractCenterlines(orient, psi):
-    """ Use non-maxima suppression to extract centerlines.
-    This function uses the previously computed singularity index response (psi)
-    and the dominant orientation (orient).
+    """ Uses the previously computed singularity index response (psi)
+    and the dominant orientation (orient) to extract centerlines.
     
-    Inputs: (can be obtained by running the mmSingularityIndex function)
+    Inputs: (can be obtained by running applyMMSI function)
     psi -- the singularity index response
     orient -- local orientation at each spatial location (x,y)    
     
@@ -44,13 +43,15 @@ def extractCenterlines(orient, psi):
 
 
 def thresholdCenterlines(nms, tLow=0.012, tHigh=0.12, bimodal=True):
-    """ Use a continuity-preserving hysteresis thresholding to classify
+    """ Uses a continuity-preserving hysteresis thresholding to classify
     centerlines.
     
     Inputs:
     nms -- Non-maxima suppressed singularity index response
 
     Keyword Arguments:
+    bimodal -- true if the areas of rivers in the image are sufficiently
+               large that the distribution of ψ is bimodal
     tLow -- lower threshold (automatically set if bimodal=True)
     tHigh -- higher threshold (automatically set if bimodal=True)
 

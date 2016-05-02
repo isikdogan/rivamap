@@ -22,7 +22,7 @@ class GeoMetadata:
 def loadGeoMetadata(filepath):
     """ Reads metadata from a geotiff file
     
-    Input Argument:
+    Inputs:
     filepath -- path to the file
     
     Returns:
@@ -53,7 +53,7 @@ def loadGeoMetadata(filepath):
 def saveAsGeoTiff(gm, I, filepath):
     """ Saves a raster image as a geotiff file
     
-    Input Arguments:
+    Inputs:
     gm -- georeferencing metadata
     I -- raster image
     filepath -- path to the file    
@@ -88,7 +88,7 @@ def saveAsGeoTiff(gm, I, filepath):
 def pix2lonlat(gm, x, y):
     """ Convers pixel coordinates into longitude and latitude
     
-    Input Arguments:
+    Inputs:
     gm -- georeferencing metadata
     x, y -- pixel coordinates
     
@@ -111,7 +111,7 @@ def pix2lonlat(gm, x, y):
 def lonlat2pix(gm, lon, lat):
     """ Convers longitude and latitude into pixel coordinates
     
-    Input Arguments:
+    Inputs:
     gm -- georeferencing metadata
     lon, lat -- longitude and latitude
     
@@ -133,7 +133,7 @@ def lonlat2pix(gm, lon, lat):
 def exportCSVfile(centerlines, widthMap, gm, filepath):
     """ Exports (coordinate, width) pairs to a comma separated text file
     
-    Input Arguments:
+    Inputs:
     centerlines -- a binary matrix that indicates centerline locations
     widthMap -- estimated width at each spatial location (x,y)
     gm -- georeferencing metadata

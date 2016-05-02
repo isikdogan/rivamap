@@ -75,14 +75,16 @@ class SingularityIndexFilters:
         
 
 def applyMMSI(I1, filters, togglePolarity=False):
-    """ Apply the filters to a given input image to compute the
+    """ Applies the filters to a given input image to compute the
     modified multiscale singularity index response. Estimate the width
     and the dominant orientation angle for each spatial location.
 
-    Input Arguments:
+    Inputs:
     I1 -- input image (e.g. Landsat NIR band or MNDWI)
     filters -- an instance of SingularityIndexFilters class that contains
                precomputed filters
+
+    Keyword arguments:
     togglePolarity -- changes polarity, use if the rivers are darker
                       than land in the input image (i.e. SAR images)
 
