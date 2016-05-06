@@ -1,10 +1,18 @@
-## Channel Network Extractor
+### RivaMap: An Automated River Analysis and Mapping Engine
 
 #### Related papers
 <small>
 * Isikdogan, F., A.C. Bovik, and P. Passalacqua (2016). LarMap: A Framework for Creating Large-scale River Maps using Satellite Imagery, unpublished.
 * Isikdogan, F., A.C. Bovik, and P. Passalacqua (2015). Automatic Channel Network Extraction From Remotely Sensed Images by Singularity Analysis, *IEEE Geoscience and Remote Sensing Letters*, 12, 11, 2218-2221. [[**Read at IEEExplore**]](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7192616), [[**PDF**]](http://live.ece.utexas.edu/publications/2015/Isikdogan_GRSL_2015_Channel_Network_Extraction.pdf)
 </small>
+
+#### Dependencies
+* python 2.7
+* numpy
+* scipy
+* cv2
+* matplotlib
+* osgeo
 
 #### Example Use
 For an example use of the framework please see [example.ipynb](./examples/example.ipynb)
