@@ -13,7 +13,7 @@ import os
 import glob
 import cv2
 import numpy as np
-from cne import singularity_index, delineate, preprocess, georef
+from rivamap import singularity_index, delineate, preprocess, georef
 from multiprocessing import Process
 import time
 import zipfile
@@ -21,7 +21,7 @@ import ntpath
 
 # Reads images from base_dir and saves the results to save_dir
 base_dir = "/home/leo/landsat_1x1_new/"
-save_dir = "/home/leo/cne_output/"
+save_dir = "/home/leo/rivamap_output/"
 landsat_images = glob.glob(base_dir + '*.zip')
 
 def chunks(l, n):

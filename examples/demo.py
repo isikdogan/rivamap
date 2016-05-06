@@ -10,7 +10,7 @@ Example use of the channel network extraction framework
 """
 
 import cv2
-from cne import singularity_index, delineate, preprocess, georef, visualization
+from rivamap import singularity_index, delineate, preprocess, georef, visualization
 
 #You can download the example images from AWS:
 #http://landsat-pds.s3.amazonaws.com/L8/138/045/LC81380452015067LGN00/LC81380452015067LGN00_B3.TIF
