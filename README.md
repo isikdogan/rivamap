@@ -1,31 +1,40 @@
-### RivaMap: An Automated River Analysis and Mapping Engine
+# RivaMap: An Automated River Analysis and Mapping Engine
 
-#### Related papers
-<small>
-* Isikdogan, F., A.C. Bovik, and P. Passalacqua (2016). LarMap: A Framework for Creating Large-scale River Maps using Satellite Imagery, unpublished.
-* Isikdogan, F., A.C. Bovik, and P. Passalacqua (2015). Automatic Channel Network Extraction From Remotely Sensed Images by Singularity Analysis, *IEEE Geoscience and Remote Sensing Letters*, 12, 11, 2218-2221. [[**Read at IEEExplore**]](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7192616), [[**PDF**]](http://live.ece.utexas.edu/publications/2015/Isikdogan_GRSL_2015_Channel_Network_Extraction.pdf)
-</small>
+## Related papers
+* F. Isikdogan, A.C. Bovik, and P. Passalacqua, "RivaMap: an automated river analysis and mapping engine," *IEEE Transactions on Geoscience and Remote Sensing*, submitted.
+* F. Isikdogan, A.C. Bovik, and P. Passalacqua, "Automatic channel network extraction from remotely sensed images by singularity analysis," *IEEE Geoscience and Remote Sensing Letters*, 12, 11, 2218-2221, 2015. [[**Read at IEEExplore**]](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7192616), [[**PDF**]](http://live.ece.utexas.edu/publications/2015/Isikdogan_GRSL_2015_Channel_Network_Extraction.pdf)
 
-#### Dependencies
-* python 2.7
-* numpy
-* scipy
-* cv2
-* matplotlib
-* osgeo
+## Dependencies and Installation
+**Dependencies:**
+* OpenCV 2.4
+* Python 2.7
+* Numpy
+* Scipy
+* Matplotlib
+* GDAL
 
-#### Example Use
-For an example use of the framework please see [example.ipynb](./examples/example.ipynb)
+**Installing from PyPI:**
 
-#### Example Results
+    $ sudo pip install rivamap
+
+**Installing from GitHub:**
+
+    $ git clone https://github.com/isikdogan/rivamap.git
+    $ sudo python setup.py install
+
+**Example Use:**
+
+See [example.ipynb](./examples/example.ipynb)
+
+## Example Results
 
 <a href="http://live.ece.utexas.edu/research/cne/img/keithsburg.png"><img src="http://live.ece.utexas.edu/research/cne/img/keithsburg.png" alt="Example Result" height="250"></a>
 <a href="http://live.ece.utexas.edu/research/cne/img/waxlake.png"><img src="http://live.ece.utexas.edu/research/cne/img/waxlake.png" alt="Example Result" height="250"></a>
 <a href="http://live.ece.utexas.edu/research/cne/img/mississippi.png"><img src="http://live.ece.utexas.edu/research/cne/img/mississippi.png" alt="Example Result" height="250"></a>
 <a href="http://live.ece.utexas.edu/research/cne/img/channelmapoverlaid.png"><img src="http://live.ece.utexas.edu/research/cne/img/ganges.png" alt="Example Result" height="250"></a>
 
-#### Reference
-<small>
+## Reference
+
 <table>
     <tbody>
         <tr>
@@ -195,11 +204,11 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
             </td>
             <td>
                 <p>
-                    Reads metadata from a geotiff file.
+                    Reads metadata from a GeoTIFF file.
                 </p>
                 <p>
                     Inputs:<br/>
-                    filepath: path to the file
+                    filepath: the path to the file
                 </p>
                 <p>
                     Returns:<br/>
@@ -215,7 +224,7 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
             </td>
             <td>
                 <p>
-                    Saves a raster image as a geotiff file
+                    Saves a raster image as a GeoTIFF file
                 </p>
                 <p>
                     Inputs:<br/>
@@ -281,7 +290,7 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
                     Inputs:<br/>
                     centerlines: a binary matrix that indicates centerline locations<br/>
                     widthMap: estimated width at each spatial location (x,y)<br/>
-                    gm: georeferencing metadata filepath: path to the file
+                    gm: georeferencing metadata filepath: the path to the file
                 </p>
             </td>
         </tr>
@@ -362,4 +371,3 @@ For an example use of the framework please see [example.ipynb](./examples/exampl
         </tr>
     </tbody>
 </table>
-</small>
