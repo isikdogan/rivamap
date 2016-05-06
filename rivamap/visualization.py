@@ -113,7 +113,10 @@ def quiverPlot(psi, orient, saveDest):
     U = -psi_s * np.sin(orient_s)
     V = psi_s * np.cos(orient_s)
 
-    plt.figure(figsize=(9,9))
+    R, C = psi.shape
+    aspect_ratio = float(R)/C
+
+    plt.figure(figsize=(10, 10*aspect_ratio))
     ax = plt.gca()
     ax.invert_yaxis()
     plt.quiver(U, V, scale=4, width=0.001, pivot='mid', headwidth=0, minlength=0)
