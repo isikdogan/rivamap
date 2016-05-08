@@ -144,7 +144,7 @@ def applyMMSI(I1, filters, togglePolarity=False):
              (1-np.cos(2*angles)-(np.sqrt(3)*np.sin(2*angles)))*J2120) / 3
 
         # Compute the singularity index for the current scale
-        psi_scale = np.abs(J0)*J2 / ( 1 + np.abs(J1)**2 )
+        psi_scale = np.abs(J0)*J2 / ( 1 + J1**2 )
 
         # Resize scale responses to the same size for element-wise comparison
         if s > 0:
