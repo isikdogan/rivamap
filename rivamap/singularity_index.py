@@ -109,7 +109,8 @@ def applyMMSI(I1, filters, togglePolarity=False):
     for s in range(0, filters.nrScales):
         print "Processing scale: " + str(s)
 
-        # Downscale the image to the current scale (faster than increasing the sigma)
+        # Downscale the image to the current scale. We use a pyramid instead of
+        # increasing the sigma and size of the kernels for efficiency
         if s > 0:
             I1 = cv2.resize(I1, (int(C/(np.sqrt(2)**s)), int(R/(np.sqrt(2)**s))), \
                             interpolation = cv2.INTER_CUBIC)
