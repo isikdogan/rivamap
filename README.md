@@ -28,10 +28,10 @@ See [example.ipynb](./examples/example.ipynb)
 
 ## Example Results
 
-<a href="http://live.ece.utexas.edu/research/cne/img/keithsburg.png"><img src="http://live.ece.utexas.edu/research/cne/img/keithsburg.png" alt="Example Result" height="250"></a>
-<a href="http://live.ece.utexas.edu/research/cne/img/waxlake.png"><img src="http://live.ece.utexas.edu/research/cne/img/waxlake.png" alt="Example Result" height="250"></a>
-<a href="http://live.ece.utexas.edu/research/cne/img/mississippi.png"><img src="http://live.ece.utexas.edu/research/cne/img/mississippi.png" alt="Example Result" height="250"></a>
-<a href="http://live.ece.utexas.edu/research/cne/img/channelmapoverlaid.png"><img src="http://live.ece.utexas.edu/research/cne/img/ganges.png" alt="Example Result" height="250"></a>
+<a href="http://live.ece.utexas.edu/research/rivamap/img/keithsburg.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/keithsburg.png" alt="Example Result" height="250"></a>
+<a href="http://live.ece.utexas.edu/research/rivamap/img/waxlake.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/waxlake.png" alt="Example Result" height="250"></a>
+<a href="http://live.ece.utexas.edu/research/rivamap/img/mississippi.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/mississippi.png" alt="Example Result" height="250"></a>
+<a href="http://live.ece.utexas.edu/research/rivamap/img/channelmapoverlaid.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/ganges.png" alt="Example Result" height="250"></a>
 
 ## Reference
 
