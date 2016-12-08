@@ -31,7 +31,7 @@ See [example.ipynb](./examples/example.ipynb)
 <a href="http://live.ece.utexas.edu/research/rivamap/img/keithsburg.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/keithsburg.png" alt="Example Result" height="250"></a>
 <a href="http://live.ece.utexas.edu/research/rivamap/img/waxlake.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/waxlake.png" alt="Example Result" height="250"></a>
 <a href="http://live.ece.utexas.edu/research/rivamap/img/mississippi.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/mississippi.png" alt="Example Result" height="250"></a>
-<a href="http://live.ece.utexas.edu/research/rivamap/img/channelmapoverlaid.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/ganges.png" alt="Example Result" height="250"></a>
+<a href="http://live.ece.utexas.edu/research/rivamap/img/ganges.png"><img src="http://live.ece.utexas.edu/research/rivamap/img/ganges.png" alt="Example Result" height="250"></a>
 
 ## Reference
 
