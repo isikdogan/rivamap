@@ -74,7 +74,7 @@ class SingularityIndexFilters:
         self.isCreated = True
         
 
-def applyMMSI(I1, filters, togglePolarity=False):
+def applyMMSI(I1, filters, togglePolarity=False, narrow_rivers=True):
     """ Applies the filters to a given input image to compute the
     modified multiscale singularity index response. Estimate the width
     and the dominant orientation angle for each spatial location.
@@ -223,7 +223,8 @@ def applyMMSI(I1, filters, togglePolarity=False):
     widthMap[psi>0] = -B[psi>0] / (2*A[psi>0])
 
     # Scaling factor for narrow rivers
-    scalingFactor = 2/(1+np.exp(-8*psi))-1
-    widthMap = scalingFactor * widthMap + 0.5
+    if narrow_rivers:
+        scalingFactor = 2/(1+np.exp(-8*psi))-1
+        widthMap = scalingFactor * widthMap + 0.5
 
     return psi, widthMap, orient
