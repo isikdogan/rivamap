@@ -57,3 +57,6 @@ georef.saveAsGeoTiff(gm, psi, "psi_geotagged.TIF")
 
 # Export the (coordinate, width) pairs to a comma separated text file
 georef.exportCSVfile(centerlines, widthMap, gm, "results.csv")
+
+# Export line segments to a shapefile
+georef.exportShapeFile(centerlines, widthMap, gm, "results")

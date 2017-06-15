@@ -12,6 +12,7 @@
 * Scipy
 * Matplotlib
 * GDAL
+* pyshp
 
 **Installing from PyPI:**
 
@@ -285,6 +286,24 @@ See [example.ipynb](./examples/example.ipynb)
             <td>
                 <p>
                     Exports (coordinate, width) pairs to a comma separated text file.
+                </p>
+                <p>
+                    Inputs:<br/>
+                    centerlines: a binary matrix that indicates centerline locations<br/>
+                    widthMap: estimated width at each spatial location (x,y)<br/>
+                    gm: georeferencing metadata filepath: the path to the file
+                </p>
+            </td>
+        </tr>
+	<tr>
+            <td>
+                <p>
+                    georef.exportShapeFile [NEW]
+                </p>
+            </td>
+            <td>
+                <p>
+                    Exports line segments to a ShapeFile.
                 </p>
                 <p>
                     Inputs:<br/>

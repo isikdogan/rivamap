@@ -10,6 +10,7 @@ Project Homepage: http://live.ece.utexas.edu/research/cne/
 import csv
 import warnings
 import numpy as np
+import shapefile
 from osgeo import osr, gdal
 
 class GeoMetadata:
@@ -151,3 +152,91 @@ def exportCSVfile(centerlines, widthMap, gm, filepath):
         for i in range(0, len(centerlineWidth)):
             lon, lat = pix2lonlat(gm, col[i], row[i])
             writer.writerow([centerlineWidth[i], lat, lon])
+
+def exportShapeFile(centerlines, widthMap, gm, filepath):
+    """ Exports line segments to a ShapeFile
+    
+    Inputs:
+    centerlines -- a binary matrix that indicates centerline locations
+    widthMap -- estimated width at each spatial location (x,y)
+    gm -- georeferencing metadata
+    filepath -- path to the file
+    
+    """
+        
+    # initiate the shp writer
+    w = shapefile.Writer()
+    w.field('width', 'N', decimal=2)
+
+    R, C = centerlines.shape
+    
+    # make a copy of the centerlines matrix since we'll be modifying it
+    c_copy = centerlines.copy()
+        
+    # scan the centerline matrix skipping the boundary pixels
+    # convert neighbor centerline pixels into line segments
+    for r in range(1, R-1):
+        for c in range(1, C-1):
+            if c_copy[r,c]:                
+                c_copy[r,c] = 0                      
+                lon_orig, lat_orig = pix2lonlat(gm, c, r)
+                
+                # connect neighbors (check diagonals first)
+                if c_copy[r-1, c-1]:
+                    c_copy[r-1, c] = 0
+                    c_copy[r, c-1] = 0
+                    lon, lat = pix2lonlat(gm, c-1, r-1)
+                    width = ( + widthMap[r-1, c-1]) / 2
+                    w.record(width)
+                    w.line(parts=[[[lon_orig, lat_orig], [lon, lat]]])
+                    
+                if c_copy[r-1, c+1]:
+                    c_copy[r-1, c] = 0
+                    c_copy[r, c+1] = 0
+                    lon, lat = pix2lonlat(gm, c+1, r-1)
+                    width = (widthMap[r, c] + widthMap[r-1, c+1]) / 2
+                    w.record(width)
+                    w.line(parts=[[[lon_orig, lat_orig], [lon, lat]]])
+                    
+                if c_copy[r+1, c-1]:
+                    c_copy[r+1, c] = 0
+                    c_copy[r, c-1] = 0
+                    lon, lat = pix2lonlat(gm, c-1, r+1)
+                    width = (widthMap[r, c] + widthMap[r+1, c-1]) / 2
+                    w.record(width)
+                    w.line(parts=[[[lon_orig, lat_orig], [lon, lat]]])
+                    
+                if c_copy[r+1, c+1]:
+                    c_copy[r+1, c] = 0
+                    c_copy[r, c+1] = 0
+                    lon, lat = pix2lonlat(gm, c+1, r+1)
+                    width = (widthMap[r, c] + widthMap[r+1, c+1]) / 2
+                    w.record(width)
+                    w.line(parts=[[[lon_orig, lat_orig], [lon, lat]]])
+                    
+                if c_copy[r-1, c]:
+                    lon, lat = pix2lonlat(gm, c, r-1)
+                    width = (widthMap[r, c] + widthMap[r-1, c]) / 2
+                    w.record(width)
+                    w.line(parts=[[[lon_orig, lat_orig], [lon, lat]]])
+                    
+                if c_copy[r+1, c]:
+                    lon, lat = pix2lonlat(gm, c, r+1)
+                    width = (widthMap[r, c] + widthMap[r+1, c]) / 2
+                    w.record(width)
+                    w.line(parts=[[[lon_orig, lat_orig], [lon, lat]]])
+                    
+                if c_copy[r, c-1]:
+                    lon, lat = pix2lonlat(gm, c-1, r)
+                    width = (widthMap[r, c] + widthMap[r, c-1]) / 2
+                    w.record(width)
+                    w.line(parts=[[[lon_orig, lat_orig], [lon, lat]]])
+                
+                if c_copy[r, c+1]:
+                    lon, lat = pix2lonlat(gm, c+1, r)
+                    width = (widthMap[r, c] + widthMap[r, c+1]) / 2
+                    w.record(width)
+                    w.line(parts=[[[lon_orig, lat_orig], [lon, lat]]])
+                    
+    w.save(filepath)
+    
