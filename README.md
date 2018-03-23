@@ -1,7 +1,7 @@
 # RivaMap: An Automated River Analysis and Mapping Engine
 
 ## Related papers
-* F. Isikdogan, A.C. Bovik, and P. Passalacqua, "RivaMap: an automated river analysis and mapping engine," *Remote Sensing of Environment, Special Issue on Big Remotely Sensed Data*, 2017, in press. [[**Read at ScienceDirect**]](http://www.sciencedirect.com/science/article/pii/S0034425717301475), [[**PDF**]](http://www.isikdogan.com/files/isikdogan2017_rivamap.pdf)
+* F. Isikdogan, A.C. Bovik, and P. Passalacqua, "RivaMap: an automated river analysis and mapping engine," *Remote Sensing of Environment, Special Issue on Big Remotely Sensed Data*, 2017. [[**Read at ScienceDirect**]](http://www.sciencedirect.com/science/article/pii/S0034425717301475), [[**PDF**]](http://www.isikdogan.com/files/isikdogan2017_rivamap.pdf)
 * F. Isikdogan, A.C. Bovik, and P. Passalacqua, "Automatic channel network extraction from remotely sensed images by singularity analysis," *IEEE Geoscience and Remote Sensing Letters*, 12, 11, 2218-2221, 2015. [[**Read at IEEExplore**]](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7192616), [[**PDF**]](http://live.ece.utexas.edu/publications/2015/Isikdogan_GRSL_2015_Channel_Network_Extraction.pdf)
 
 ## Dependencies and Installation
