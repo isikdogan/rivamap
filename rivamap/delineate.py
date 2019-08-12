@@ -34,7 +34,7 @@ def extractCenterlines(orient, psi):
 
     # Find maxima along local orientation
     nms = np.zeros(psi.shape)
-    for q, (di, dj) in zip(range(4), ((1, 0), (1, 1), (0, 1), (-1, 1))):
+    for q, (di, dj) in zip(list(range(4)), ((1, 0), (1, 1), (0, 1), (-1, 1))):
         for i, j in zip(*np.nonzero(np.logical_and(Q == q, mask))):
             if psi[i, j] > psi[i + di, j + dj] and psi[i, j] > psi[i - di, j - dj]:
                 nms[i, j] = psi[i,j]
@@ -71,7 +71,7 @@ def thresholdCenterlines(nms, tLow=0.012, tHigh=0.12, bimodal=True):
     # Find connected components that has at least one strong centerline pixel
     strel = np.ones((3, 3), dtype=bool)
     cclabels, numcc = ndlabel(centerlineCandidate, strel)
-    sumstrong = ndsum(strongCenterline, cclabels, range(1, numcc+1))
+    sumstrong = ndsum(strongCenterline, cclabels, list(range(1, numcc+1)))
     centerlines = np.hstack((0, sumstrong > 0)).astype('bool')
     centerlines = centerlines[cclabels]
 

@@ -7,7 +7,7 @@
 ## Dependencies and Installation
 **Dependencies:**
 * OpenCV 2.4
-* Python 2.7
+* Python ~~2.7~~ Code updated and runs Python 3.7 now (8/12/2019 -Jay)
 * Numpy
 * Scipy
 * Matplotlib

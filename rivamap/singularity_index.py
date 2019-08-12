@@ -49,7 +49,7 @@ class SingularityIndexFilters:
         theta3 = 2*np.pi/3
     
         # Create a meshgrid for second order derivatives
-        X, Y = np.meshgrid(range(-ksize2,ksize2+1), range(-ksize2,ksize2+1))
+        X, Y = np.meshgrid(list(range(-ksize2,ksize2+1)), list(range(-ksize2,ksize2+1)))
         u1 = X*np.cos(theta1) - Y*np.sin(theta1)
         u2 = X*np.cos(theta2) - Y*np.sin(theta2)
         u3 = X*np.cos(theta3) - Y*np.sin(theta3)
@@ -107,7 +107,7 @@ def applyMMSI(I1, filters, togglePolarity=False, narrow_rivers=True):
     
     # Compute the multiscale singularity index
     for s in range(0, filters.nrScales):
-        print "Processing scale: " + str(s)
+        print("Processing scale: " + str(s))
 
         # Downscale the image to the current scale. We use a pyramid instead of
         # increasing the sigma and size of the kernels for efficiency
