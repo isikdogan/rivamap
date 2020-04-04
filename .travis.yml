@@ -1,0 +1,13 @@
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+install:
+  - sudo apt-get install -qq python-gdal
+  - pip install -r requirements.txt
+  - pip install pytest
+# command to run tests
+script:
+  - python setup.py install
+  - pytest
