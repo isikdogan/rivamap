@@ -19,5 +19,5 @@ setup(
         'Topic :: Utilities',
         'Programming Language :: Python :: 2.7',
     ],
-    install_requires=['numpy', 'scipy', 'matplotlib'],
+    install_requires=['numpy', 'scipy', 'matplotlib', 'gdal'],
 )
