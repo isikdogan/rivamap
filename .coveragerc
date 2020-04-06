@@ -1,0 +1,6 @@
+[run]
+source = rivamap
+
+omit =
+    rivamap/visualization.py
+    rivamap/georef.py
