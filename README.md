@@ -21,7 +21,6 @@
 **Installing from GitHub:**
 
     $ git clone https://github.com/isikdogan/rivamap.git
-    $ pip install -r requirements.txt
     $ sudo python setup.py install
 
 **Example Use:**
