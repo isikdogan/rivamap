@@ -8,7 +8,6 @@ setup(
     name = 'rivamap',
     version = '1.0',
     author = 'Leo Isikdogan',
-    author_email = 'leo@isikdogan.com',
     description = ('An automated river analysis and mapping engine.'),
     keywords = 'remote sensing, landsat, satellite, river',
     url = 'https://github.com/isikdogan/rivamap',
